@@ -11,7 +11,7 @@ import kotlin.test.assertTrue
 /**
  * A simple functional test for the 'minigdx.gradle.plugin.greeting' plugin.
  */
-class MinigdxGradlePluginPluginFunctionalTest {
+class MinigdxJvmGradlePluginFunctionalTest {
     @Test fun `can run task`() {
         // Setup the test build
         val projectDir = File("build/functionalTest")
@@ -19,7 +19,7 @@ class MinigdxGradlePluginPluginFunctionalTest {
         projectDir.resolve("settings.gradle").writeText("")
         projectDir.resolve("build.gradle").writeText("""
             plugins {
-                id('minigdx.gradle.plugin.greeting')
+                id('com.github.minigdx.jvm')
             }
         """)
 

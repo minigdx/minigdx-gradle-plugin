@@ -9,3 +9,11 @@
 
 rootProject.name = "minigdx-gradle-plugin"
 include("plugin")
+
+pluginManagement {
+    this.repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
+    }
+}

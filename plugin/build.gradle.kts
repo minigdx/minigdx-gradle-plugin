@@ -7,37 +7,27 @@
  */
 
 plugins {
+    // Plugin publication plugin.
+    id("com.gradle.plugin-publish") version "0.13.0"
+
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
 
-    // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.4.20"
-}
-
-repositories {
-    // Use JCenter for resolving dependencies.
-    jcenter()
+    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.0-SNAPSHOT"
 }
 
 dependencies {
-    // Align versions of all Kotlin components
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+    implementation(platform("me.champeau.jdoctor:jdoctor-bom:0.1"))
+    implementation("me.champeau.jdoctor:jdoctor-core")
+    implementation("me.champeau.jdoctor:jdoctor-utils:0.1")
 
-    // Use the Kotlin JDK 8 standard library.
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    // Use the Kotlin test library.
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-
-    // Use the Kotlin JUnit integration.
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
 
 gradlePlugin {
     // Define the plugin
-    val greeting by plugins.creating {
-        id = "minigdx.gradle.plugin.greeting"
-        implementationClass = "minigdx.gradle.plugin.MinigdxGradlePluginPlugin"
+    val jvm by plugins.creating {
+        id = "com.github.minigdx.jvm"
+        implementationClass = "minigdx.gradle.plugin.MinigdxJvmGradlePlugin"
     }
 }
 
