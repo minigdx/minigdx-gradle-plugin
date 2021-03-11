@@ -1,0 +1,9 @@
+┌──────────────┬───────────────────────────────────┐
+│  Task name   │            Description            │
+├──────────────┼───────────────────────────────────┤
+│ runJvm       │ Run your game on the JVM.         │
+│ bundle-jar   │ Create a bundle as a Fat jar      │
+│ bundle-win   │ Create a bundle to run on Windows │
+│ bundle-macos │ Create a bundle to run on MacOS X │
+│ bundle-linux │ Create a bundle to run on Linux   │
+└──────────────┴───────────────────────────────────┘

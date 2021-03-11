@@ -21,13 +21,15 @@ dependencies {
     implementation("me.champeau.jdoctor:jdoctor-core")
     implementation("me.champeau.jdoctor:jdoctor-utils:0.1")
 
+    api("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.3.70")
+    api("com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin:DEV-SNAPSHOT")
 }
 
 gradlePlugin {
     // Define the plugin
     val jvm by plugins.creating {
         id = "com.github.minigdx.jvm"
-        implementationClass = "minigdx.gradle.plugin.MinigdxJvmGradlePlugin"
+        implementationClass = "minigdx.gradle.plugin.MiniGdxJvmGradlePlugin"
     }
 }
 
