@@ -7,8 +7,11 @@ import com.github.minigdx.gradle.plugin.internal.Severity
 import com.github.minigdx.gradle.plugin.internal.Solution
 import com.github.minigdx.gradle.plugin.internal.BuildReporter
 import com.github.minigdx.gradle.plugin.internal.MiniGdxPlatform
+import com.github.minigdx.gradle.plugin.internal.assertsDirectory
 import com.github.minigdx.gradle.plugin.internal.createDir
 import com.github.minigdx.gradle.plugin.internal.hasPlatforms
+import com.github.minigdx.gradle.plugin.internal.maybeCreateMiniGdxExtension
+import com.github.minigdx.gradle.plugin.internal.minigdx
 import com.github.minigdx.gradle.plugin.internal.platforms
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
@@ -18,6 +21,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        project.maybeCreateMiniGdxExtension()
         if (project.platforms().isEmpty()) {
             throw MiniGdxException.create(
                 severity = Severity.EASY,
@@ -47,6 +51,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
             )
         }
         project.gradle.addBuildListener(BuildReporter(project))
+
         project.createDir("src/commonMain/kotlin")
 
         configureDependencies(project)
@@ -56,8 +61,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
     private fun configureDependencies(project: Project) {
         project.afterEvaluate {
-            // TODO: put the version of MiniGDX in an Gradle Extension
-            project.dependencies.add("commonMainImplementation", "com.github.minigdx:minigdx:DEV-SNAPSHOT")
+            project.dependencies.add("commonMainImplementation", "com.github.minigdx:minigdx:${project.minigdx.version.get()}")
         }
     }
 
@@ -68,7 +72,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
             it.register("assetsSource") {
                 it.format.set(Format.PROTOBUF)
                 it.gltfDirectory.set(project.file("src/commonMain/assetsSource"))
-                it.target.set(project.file("src/commonMain/resources")) // FIXME: it will not work with Android
+                it.target.set(project.assertsDirectory())
             }
         }
 

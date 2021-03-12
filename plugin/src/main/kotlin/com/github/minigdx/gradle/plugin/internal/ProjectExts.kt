@@ -1,9 +1,8 @@
 package com.github.minigdx.gradle.plugin.internal
 
-import com.github.minigdx.gradle.plugin.internal.MiniGdxException
-import com.github.minigdx.gradle.plugin.internal.Severity
-import com.github.minigdx.gradle.plugin.internal.Solution
+import com.github.minigdx.gradle.plugin.MiniGdxExtension
 import org.gradle.api.Project
+import java.io.File
 
 fun Project.hasPlatforms(vararg platforms: MiniGdxPlatform): Boolean {
     return platforms.all { this.plugins.hasPlugin(it.pluginId) }
@@ -47,5 +46,25 @@ fun Project.createDir(directoryName: String): Boolean {
         this.file(directoryName).mkdirs()
     } else {
         false
+    }
+}
+
+fun Project.assertsDirectory(): File {
+    // FIXME: it will not work with Android
+    return this.projectDir.resolve("src/commonMain/resources")
+}
+
+/**
+ * Helper to access the extension.
+ * Do NOT call this method too early as the extension might not be configured by the user.
+ */
+val Project.minigdx: MiniGdxExtension
+    get() {
+        return this.extensions.getByType(MiniGdxExtension::class.java)
+    }
+
+fun Project.maybeCreateMiniGdxExtension() {
+    if(project.extensions.findByType(MiniGdxExtension::class.java) == null) {
+        project.extensions.create("minigdx", MiniGdxExtension::class.java, project)
     }
 }
