@@ -3,9 +3,8 @@
  */
 package minigdx.gradle.plugin
 
-import org.gradle.testfixtures.ProjectBuilder
 import kotlin.test.Test
-import kotlin.test.assertNotNull
+import org.gradle.testfixtures.ProjectBuilder
 
 /**
  * A simple unit test for the 'minigdx.gradle.plugin.greeting' plugin.
@@ -15,8 +14,5 @@ class MiniGdxJvmGradlePluginTest {
         // Create a test project and apply the plugin
         val project = ProjectBuilder.builder().build()
         project.plugins.apply("com.github.minigdx.jvm")
-
-        // Verify the result
-        assertNotNull(project.tasks.findByName("greeting"))
     }
 }

@@ -3,25 +3,20 @@
  */
 package minigdx.gradle.plugin
 
-import com.github.dwursteisen.gltf.Format
-import com.github.dwursteisen.gltf.GltfExtensions
-import minigdx.gradle.plugin.internal.BuildReporter
 import minigdx.gradle.plugin.internal.MiniGdxPlatform
-import org.gradle.api.NamedDomainObjectContainer
-import org.gradle.api.Project
+import minigdx.gradle.plugin.internal.checkCommonPlugin
+import minigdx.gradle.plugin.internal.createDir
 import org.gradle.api.Plugin
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.gradle.api.Project
 
 /**
  * A simple 'hello world' plugin.
  */
-class MiniGdxJvmGradlePlugin: Plugin<Project> {
+class MiniGdxJvmGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        project.gradle.addBuildListener(BuildReporter(MiniGdxPlatform.JVM))
+        project.checkCommonPlugin(MiniGdxPlatform.JVM)
 
-        configureKotlinMpp(project)
-        configureMiniGdxGltfPlugin(project)
         configureMiniGdxDependencies(project)
         configureSourceSets(project)
         // TODO:
@@ -32,78 +27,16 @@ class MiniGdxJvmGradlePlugin: Plugin<Project> {
         //   configure pipeline pour github ?
         //   configure build chain to get java 11 and jpackage
         //   https://walczak.it/blog/distributing-javafx-desktop-applications-without-requiring-jvm-using-jlink-and-jpackage
-
-        // Register a task
-        project.tasks.register("greeting") { task ->
-            task.doLast {
-                println("Hello from plugin 'minigdx.gradle.plugin.greeting'")
-            }
-        }
     }
 
     private fun configureSourceSets(project: Project) {
-        createDirectory(project, "src/commonMain/kotlin")
-        createDirectory(project, "src/jvmMain/kotlin")
+        project.createDir("src/jvmMain/kotlin")
+        project.createDir("src/jvmTest/kotlin")
     }
+
     private fun configureMiniGdxDependencies(project: Project) {
-        project.dependencies.add("commonMainImplementation", "com.github.minigdx:minigdx:DEV-SNAPSHOT")
-        project.dependencies.add("jvmMainImplementation", "com.github.minigdx:minigdx-jvm:DEV-SNAPSHOT")
-    }
-
-    private fun configureMiniGdxGltfPlugin(project: Project) {
-        project.apply { it.plugin("com.github.minigdx.gradle.plugin.gltf") }
-
-        project.extensions.configure<NamedDomainObjectContainer<GltfExtensions>>("gltfPlugin") {
-            it.register("assetsSource") {
-                it.format.set(Format.PROTOBUF)
-                it.gltfDirectory.set(project.file("src/commonMain/assetsSource"))
-                it.target.set(project.file("src/commonMain/assets"))
-            }
-        }
-
-        createDirectory(project, "src/commonMain/assetsSource")
-    }
-
-    private fun createDirectory(project: Project, directoryName: String) {
-        if (!project.file(directoryName).exists()) {
-            project.file(directoryName).mkdirs()
-        }
-    }
-
-    private fun configureKotlinMpp(project: Project) {
-        project.apply { it.plugin("org.jetbrains.kotlin.multiplatform") }
-        project.extensions.configure<KotlinMultiplatformExtension>("kotlin") { mpp ->
-            mpp.jvm {
-                this.compilations.getByName("main").kotlinOptions.jvmTarget = "1.8"
-                this.compilations.getByName("test").kotlinOptions.jvmTarget = "1.8"
-            }
-
-            mpp.sourceSets.apply {
-                getByName("commonMain") {
-                    it.dependencies {
-                        implementation(kotlin("stdlib-common"))
-                    }
-                }
-
-                getByName("commonTest") {
-                    it.dependencies {
-                        implementation(kotlin("test-common"))
-                        implementation(kotlin("test-annotations-common"))
-                    }
-                }
-
-                getByName("jvmMain") {
-                    it.dependencies {
-                        implementation(kotlin("stdlib-jdk8"))
-                    }
-                }
-
-                getByName("jvmTest") {
-                    it.dependencies {
-                        implementation(kotlin("test-junit"))
-                    }
-                }
-            }
+        project.afterEvaluate {
+            project.dependencies.add("jvmMainImplementation", "com.github.minigdx:minigdx-jvm:DEV-SNAPSHOT")
         }
     }
 }

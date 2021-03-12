@@ -4,9 +4,8 @@
 package minigdx.gradle.plugin
 
 import java.io.File
-import org.gradle.testkit.runner.GradleRunner
 import kotlin.test.Test
-import kotlin.test.assertTrue
+import org.gradle.testkit.runner.GradleRunner
 
 /**
  * A simple functional test for the 'minigdx.gradle.plugin.greeting' plugin.
@@ -29,9 +28,6 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         runner.withPluginClasspath()
         runner.withArguments("greeting")
         runner.withProjectDir(projectDir)
-        val result = runner.build();
-
-        // Verify the result
-        assertTrue(result.output.contains("Hello from plugin 'minigdx.gradle.plugin.greeting'"))
+        val result = runner.build()
     }
 }

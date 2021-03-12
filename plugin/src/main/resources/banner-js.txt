@@ -1,6 +1,6 @@
 ┌──────────────┬───────────────────────────────────┐
 │  Task name   │            Description            │
 ├──────────────┼───────────────────────────────────┤
-│ runJvm       │ Run your game on the JVM.         │
-│ bundle-jar   │ Create a bundle as a Fat jar      │
+│ runJs        │ Run your game in your browser.    │
+│ bundle-js    │ Create a bundle as zip.           │
 └──────────────┴───────────────────────────────────┘

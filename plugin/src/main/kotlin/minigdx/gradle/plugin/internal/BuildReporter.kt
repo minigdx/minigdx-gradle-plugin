@@ -5,16 +5,17 @@ import com.github.minigdx.gradle.plugin.internal.Severity
 import com.github.minigdx.gradle.plugin.internal.Solution
 import org.gradle.BuildListener
 import org.gradle.BuildResult
+import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 
-enum class MiniGdxPlatform(val banner: String) {
-    JVM("banner-jvm.txt"),
-    JAVASCRIPT(""),
-    ANDROID("")
+enum class MiniGdxPlatform(val banner: String, val pluginId: String) {
+    JVM("banner-jvm.txt", "com.github.minigdx.jvm"),
+    JAVASCRIPT("banner-js.txt", "com.github.minigdx.js"),
+    ANDROID("banner-android.txt", "com.github.minigdx.android")
 }
 
-class BuildReporter(private val platform: MiniGdxPlatform) : BuildListener {
+class BuildReporter(private val project: Project) : BuildListener {
 
     private val classLoader = BuildReporter::class.java.classLoader
 
@@ -26,7 +27,10 @@ class BuildReporter(private val platform: MiniGdxPlatform) : BuildListener {
 
     override fun projectsEvaluated(gradle: Gradle) {
         printBanner(gradle, "banner.txt")
-        printBanner(gradle, platform.banner)
+        gradle.rootProject.logger.quiet("Platform configured: " + project.platforms().map { it.toString() }.joinToString(", "))
+        project.platforms().forEach { platform ->
+            printBanner(gradle, platform.banner)
+        }
     }
 
     private fun printBanner(gradle: Gradle, filename: String) {

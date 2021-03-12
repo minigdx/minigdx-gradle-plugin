@@ -27,9 +27,18 @@ dependencies {
 
 gradlePlugin {
     // Define the plugin
+    val common by plugins.creating {
+        id = "com.github.minigdx.common"
+        implementationClass = "minigdx.gradle.plugin.MiniGdxCommonGradlePlugin"
+    }
     val jvm by plugins.creating {
         id = "com.github.minigdx.jvm"
         implementationClass = "minigdx.gradle.plugin.MiniGdxJvmGradlePlugin"
+    }
+
+    val js by plugins.creating {
+        id = "com.github.minigdx.js"
+        implementationClass = "minigdx.gradle.plugin.MiniGdxJsGradlePlugin"
     }
 }
 
