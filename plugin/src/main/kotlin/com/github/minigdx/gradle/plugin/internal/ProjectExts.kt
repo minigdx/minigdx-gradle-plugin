@@ -1,4 +1,4 @@
-package minigdx.gradle.plugin.internal
+package com.github.minigdx.gradle.plugin.internal
 
 import com.github.minigdx.gradle.plugin.internal.MiniGdxException
 import com.github.minigdx.gradle.plugin.internal.Severity

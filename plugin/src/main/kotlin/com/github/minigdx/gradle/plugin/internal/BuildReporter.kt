@@ -1,8 +1,5 @@
-package minigdx.gradle.plugin.internal
+package com.github.minigdx.gradle.plugin.internal
 
-import com.github.minigdx.gradle.plugin.internal.MiniGdxException
-import com.github.minigdx.gradle.plugin.internal.Severity
-import com.github.minigdx.gradle.plugin.internal.Solution
 import org.gradle.BuildListener
 import org.gradle.BuildResult
 import org.gradle.api.Project

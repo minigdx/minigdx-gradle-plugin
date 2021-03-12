@@ -1,15 +1,15 @@
-package minigdx.gradle.plugin
+package com.github.minigdx.gradle.plugin
 
 import com.github.dwursteisen.gltf.Format
 import com.github.dwursteisen.gltf.GltfExtensions
 import com.github.minigdx.gradle.plugin.internal.MiniGdxException
 import com.github.minigdx.gradle.plugin.internal.Severity
 import com.github.minigdx.gradle.plugin.internal.Solution
-import minigdx.gradle.plugin.internal.BuildReporter
-import minigdx.gradle.plugin.internal.MiniGdxPlatform
-import minigdx.gradle.plugin.internal.createDir
-import minigdx.gradle.plugin.internal.hasPlatforms
-import minigdx.gradle.plugin.internal.platforms
+import com.github.minigdx.gradle.plugin.internal.BuildReporter
+import com.github.minigdx.gradle.plugin.internal.MiniGdxPlatform
+import com.github.minigdx.gradle.plugin.internal.createDir
+import com.github.minigdx.gradle.plugin.internal.hasPlatforms
+import com.github.minigdx.gradle.plugin.internal.platforms
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
