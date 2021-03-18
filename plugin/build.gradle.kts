@@ -16,6 +16,10 @@ plugins {
     id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.0.0-alpha5"
 }
 
+repositories {
+    gradlePluginPortal()
+
+}
 dependencies {
     implementation(platform("me.champeau.jdoctor:jdoctor-bom:0.1"))
     implementation("me.champeau.jdoctor:jdoctor-core")
