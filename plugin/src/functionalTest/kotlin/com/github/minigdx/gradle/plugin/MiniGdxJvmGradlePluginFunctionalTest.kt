@@ -20,6 +20,7 @@ class MiniGdxJvmGradlePluginFunctionalTest {
             """
             plugins {
                 id('com.github.minigdx.jvm')
+                id('com.github.minigdx.common')
             }
         """
         )
@@ -28,8 +29,8 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         val runner = GradleRunner.create()
         runner.forwardOutput()
         runner.withPluginClasspath()
-        runner.withArguments("greeting")
+        runner.withArguments("build")
         runner.withProjectDir(projectDir)
-        val result = runner.build()
+        runner.build()
     }
 }

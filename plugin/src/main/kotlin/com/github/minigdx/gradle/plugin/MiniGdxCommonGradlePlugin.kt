@@ -17,6 +17,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import java.net.URI
 
 class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
@@ -56,9 +57,25 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
         project.createDir("src/commonMain/kotlin")
 
+        configureProjectRepository(project)
         configureDependencies(project)
         configureMiniGdxGltfPlugin(project)
         configure(project)
+    }
+
+    private fun configureProjectRepository(project: Project) {
+        project.repositories.mavenCentral()
+        project.repositories.google()
+        // Snapshot repository. Select only our snapshot dependencies
+        project.repositories.maven {
+            it.url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        }.mavenContent {
+            it.includeVersionByRegex("com.github.minigdx", "(.*)", "LATEST-SNAPSHOT")
+            it.includeVersionByRegex("com.github.minigdx.(.*)", "(.*)", "LATEST-SNAPSHOT")
+        }
+        project.repositories.mavenLocal()
+        // Will be deprecated soon... Required for dokka
+        project.repositories.jcenter()
     }
 
     private fun configureDependencies(project: Project) {
