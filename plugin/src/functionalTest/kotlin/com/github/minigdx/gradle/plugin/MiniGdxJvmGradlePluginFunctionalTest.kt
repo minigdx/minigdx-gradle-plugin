@@ -3,9 +3,9 @@
  */
 package com.github.minigdx.gradle.plugin
 
+import org.gradle.testkit.runner.GradleRunner
 import java.io.File
 import kotlin.test.Test
-import org.gradle.testkit.runner.GradleRunner
 
 /**
  * A simple functional test for the 'minigdx.gradle.plugin.greeting' plugin.
@@ -16,18 +16,21 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
         projectDir.resolve("settings.gradle").writeText("")
-        projectDir.resolve("build.gradle").writeText("""
+        projectDir.resolve("build.gradle").writeText(
+            """
             plugins {
                 id('com.github.minigdx.jvm')
+                id('com.github.minigdx.common')
             }
-        """)
+        """
+        )
 
         // Run the build
         val runner = GradleRunner.create()
         runner.forwardOutput()
         runner.withPluginClasspath()
-        runner.withArguments("greeting")
+        runner.withArguments("build")
         runner.withProjectDir(projectDir)
-        val result = runner.build()
+        runner.build()
     }
 }

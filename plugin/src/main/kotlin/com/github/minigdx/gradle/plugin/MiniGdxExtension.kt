@@ -17,5 +17,3 @@ open class MiniGdxExtension(project: Project) {
 
     val jvm = JvmConfiguration(project)
 }
-
-

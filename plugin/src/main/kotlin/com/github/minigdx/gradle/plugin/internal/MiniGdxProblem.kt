@@ -1,12 +1,12 @@
 package com.github.minigdx.gradle.plugin.internal
 
-import java.util.Optional
-import java.util.function.Supplier
 import me.champeau.jdoctor.BaseProblem
-import me.champeau.jdoctor.Solution as JSolution
 import me.champeau.jdoctor.render.SimpleTextRenderer
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import java.util.Optional
+import java.util.function.Supplier
+import me.champeau.jdoctor.Solution as JSolution
 
 class MiniGdxProblem(
     severity: Severity,

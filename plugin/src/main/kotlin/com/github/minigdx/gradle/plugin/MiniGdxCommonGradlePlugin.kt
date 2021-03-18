@@ -2,11 +2,11 @@ package com.github.minigdx.gradle.plugin
 
 import com.github.dwursteisen.gltf.Format
 import com.github.dwursteisen.gltf.GltfExtensions
+import com.github.minigdx.gradle.plugin.internal.BuildReporter
 import com.github.minigdx.gradle.plugin.internal.MiniGdxException
+import com.github.minigdx.gradle.plugin.internal.MiniGdxPlatform
 import com.github.minigdx.gradle.plugin.internal.Severity
 import com.github.minigdx.gradle.plugin.internal.Solution
-import com.github.minigdx.gradle.plugin.internal.BuildReporter
-import com.github.minigdx.gradle.plugin.internal.MiniGdxPlatform
 import com.github.minigdx.gradle.plugin.internal.assertsDirectory
 import com.github.minigdx.gradle.plugin.internal.createDir
 import com.github.minigdx.gradle.plugin.internal.hasPlatforms
@@ -17,6 +17,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import java.net.URI
 
 class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
@@ -27,11 +28,12 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                 severity = Severity.EASY,
                 project = project,
                 because = "No MiniGDX platform has been found.",
-            description = "When the MiniGDX common plugin has been applied, no platform were found. " +
-                "It might be because you forgot to declare it or because you declare it in a wrong order.",
+                description = "When the MiniGDX common plugin has been applied, no platform were found. " +
+                    "It might be because you forgot to declare it or because you declare it in a wrong order.",
                 solutions = listOf(
                     Solution(
-                        description = """Add a platform plugin before the common plugin:
+                        description =
+                            """Add a platform plugin before the common plugin:
                             | plugins {
                             |    id("com.github.minigdx.jvm") <-- A platform needs to be declared before the common plugin
                             |    id("com.github.minigdx.common")
@@ -40,7 +42,8 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                         """.trimMargin()
                     ),
                     Solution(
-                        description = """Declare platforms need to be declare before the common plugin:
+                        description =
+                            """Declare platforms need to be declare before the common plugin:
                             | plugins {
                             |    id("com.github.minigdx.common")
                             |    id("com.github.minigdx.js") <-- Wrong! The declaration should be before the common declaration 
@@ -54,9 +57,25 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
         project.createDir("src/commonMain/kotlin")
 
+        configureProjectRepository(project)
         configureDependencies(project)
         configureMiniGdxGltfPlugin(project)
         configure(project)
+    }
+
+    private fun configureProjectRepository(project: Project) {
+        project.repositories.mavenCentral()
+        project.repositories.google()
+        // Snapshot repository. Select only our snapshot dependencies
+        project.repositories.maven {
+            it.url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        }.mavenContent {
+            it.includeVersionByRegex("com.github.minigdx", "(.*)", "LATEST-SNAPSHOT")
+            it.includeVersionByRegex("com.github.minigdx.(.*)", "(.*)", "LATEST-SNAPSHOT")
+        }
+        project.repositories.mavenLocal()
+        // Will be deprecated soon... Required for dokka
+        project.repositories.jcenter()
     }
 
     private fun configureDependencies(project: Project) {
