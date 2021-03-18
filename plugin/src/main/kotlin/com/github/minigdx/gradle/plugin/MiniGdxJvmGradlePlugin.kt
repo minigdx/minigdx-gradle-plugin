@@ -95,7 +95,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                     }
                 }
             jar.from(flatClasses)
-            jar.dependsOn("jvmJar")
+            jar.dependsOn("jvmJar", "gltf")
         }
     }
 

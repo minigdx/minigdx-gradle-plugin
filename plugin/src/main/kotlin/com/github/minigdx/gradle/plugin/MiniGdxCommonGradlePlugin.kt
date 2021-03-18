@@ -101,7 +101,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                             }
                         }
                     }
-                    this.nodejs
+                    this.nodejs()
                 }
             }
 
@@ -145,6 +145,12 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                             implementation(kotlin("test-js"))
                         }
                     }
+                }
+            }
+            mpp.sourceSets.all {
+                it.languageSettings.apply {
+                    this.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+                    this.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
                 }
             }
         }
