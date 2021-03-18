@@ -2,11 +2,11 @@ package com.github.minigdx.gradle.plugin
 
 import com.github.dwursteisen.gltf.Format
 import com.github.dwursteisen.gltf.GltfExtensions
+import com.github.minigdx.gradle.plugin.internal.BuildReporter
 import com.github.minigdx.gradle.plugin.internal.MiniGdxException
+import com.github.minigdx.gradle.plugin.internal.MiniGdxPlatform
 import com.github.minigdx.gradle.plugin.internal.Severity
 import com.github.minigdx.gradle.plugin.internal.Solution
-import com.github.minigdx.gradle.plugin.internal.BuildReporter
-import com.github.minigdx.gradle.plugin.internal.MiniGdxPlatform
 import com.github.minigdx.gradle.plugin.internal.assertsDirectory
 import com.github.minigdx.gradle.plugin.internal.createDir
 import com.github.minigdx.gradle.plugin.internal.hasPlatforms
@@ -27,11 +27,12 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                 severity = Severity.EASY,
                 project = project,
                 because = "No MiniGDX platform has been found.",
-            description = "When the MiniGDX common plugin has been applied, no platform were found. " +
-                "It might be because you forgot to declare it or because you declare it in a wrong order.",
+                description = "When the MiniGDX common plugin has been applied, no platform were found. " +
+                    "It might be because you forgot to declare it or because you declare it in a wrong order.",
                 solutions = listOf(
                     Solution(
-                        description = """Add a platform plugin before the common plugin:
+                        description =
+                            """Add a platform plugin before the common plugin:
                             | plugins {
                             |    id("com.github.minigdx.jvm") <-- A platform needs to be declared before the common plugin
                             |    id("com.github.minigdx.common")
@@ -40,7 +41,8 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                         """.trimMargin()
                     ),
                     Solution(
-                        description = """Declare platforms need to be declare before the common plugin:
+                        description =
+                            """Declare platforms need to be declare before the common plugin:
                             | plugins {
                             |    id("com.github.minigdx.common")
                             |    id("com.github.minigdx.js") <-- Wrong! The declaration should be before the common declaration 

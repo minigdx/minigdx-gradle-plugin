@@ -3,8 +3,8 @@
  */
 package com.github.minigdx.gradle.plugin
 
-import kotlin.test.Test
 import org.gradle.testfixtures.ProjectBuilder
+import kotlin.test.Test
 
 /**
  * A simple unit test for the 'minigdx.gradle.plugin.greeting' plugin.

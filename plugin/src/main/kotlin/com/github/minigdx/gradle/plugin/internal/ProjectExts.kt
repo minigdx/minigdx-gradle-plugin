@@ -64,7 +64,7 @@ val Project.minigdx: MiniGdxExtension
     }
 
 fun Project.maybeCreateMiniGdxExtension() {
-    if(project.extensions.findByType(MiniGdxExtension::class.java) == null) {
+    if (project.extensions.findByType(MiniGdxExtension::class.java) == null) {
         project.extensions.create("minigdx", MiniGdxExtension::class.java, project)
     }
 }

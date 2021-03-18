@@ -18,7 +18,6 @@ plugins {
 
 repositories {
     gradlePluginPortal()
-
 }
 dependencies {
     implementation(platform("me.champeau.jdoctor:jdoctor-bom:0.1"))

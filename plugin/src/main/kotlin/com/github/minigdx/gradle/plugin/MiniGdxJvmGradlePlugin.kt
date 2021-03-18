@@ -14,7 +14,6 @@ import com.github.minigdx.gradle.plugin.internal.maybeCreateMiniGdxExtension
 import com.github.minigdx.gradle.plugin.internal.minigdx
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaApplication
 import org.gradle.api.tasks.JavaExec
 import org.gradle.jvm.tasks.Jar
 
@@ -69,7 +68,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             it.mainClass.set(minigdx.jvm.mainClass)
             it.classpath = project.files(
                 project.buildDir.resolve("classes/kotlin/jvm/main"),
-                    project.configurations.getByName("jvmRuntimeClasspath")
+                project.configurations.getByName("jvmRuntimeClasspath")
             )
         }
 
@@ -88,7 +87,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             val dependenciesJar = project.configurations.getByName("jvmRuntimeClasspath").files
             val flatClasses = dependenciesJar.filter { it.exists() }
                 .map { deps ->
-                    if(deps.isDirectory) {
+                    if (deps.isDirectory) {
                         project.fileTree(deps)
                     } else {
                         project.zipTree(deps)
@@ -108,7 +107,8 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                 description = "MiniGDX needs the name of the class that will start the game to configure how to run it.",
                 solutions = listOf(
                     Solution(
-                        description = """Add the configuration of the main class in your gradle build script:
+                        description =
+                            """Add the configuration of the main class in your gradle build script:
                             | minigdx {
                             |   jvm.mainClass.set("com.example.MainKt")
                             | 
