@@ -62,3 +62,9 @@ tasks.check {
     // Run the functional tests as part of `check`
     dependsOn(functionalTest)
 }
+
+// Ensure "org.gradle.jvm.version" is set to "8" in Gradle metadata.
+tasks.withType<JavaCompile> {
+    sourceCompatibility = JavaVersion.VERSION_1_8.toString()
+    targetCompatibility = JavaVersion.VERSION_1_8.toString()
+}
