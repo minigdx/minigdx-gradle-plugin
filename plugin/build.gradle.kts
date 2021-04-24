@@ -13,7 +13,7 @@ plugins {
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
 
-    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.0.0-alpha5"
+    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.0.0.RC2"
 }
 
 repositories {
@@ -61,10 +61,4 @@ val functionalTest by tasks.registering(Test::class) {
 tasks.check {
     // Run the functional tests as part of `check`
     dependsOn(functionalTest)
-}
-
-// Ensure "org.gradle.jvm.version" is set to "8" in Gradle metadata.
-tasks.withType<JavaCompile> {
-    sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-    targetCompatibility = JavaVersion.VERSION_1_8.toString()
 }
