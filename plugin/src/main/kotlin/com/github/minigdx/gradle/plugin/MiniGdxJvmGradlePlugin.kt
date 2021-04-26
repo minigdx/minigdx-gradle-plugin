@@ -70,6 +70,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                 project.buildDir.resolve("classes/kotlin/jvm/main"),
                 project.configurations.getByName("jvmRuntimeClasspath")
             )
+            it.dependsOn("gltf", "jvmJar")
         }
 
         project.tasks.register("bundle-jar", Jar::class.java) { jar ->
@@ -94,7 +95,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                     }
                 }
             jar.from(flatClasses)
-            jar.dependsOn("jvmJar", "gltf")
+            jar.dependsOn("gltf", "jvmJar")
         }
     }
 
