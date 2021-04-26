@@ -56,6 +56,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         project.gradle.addBuildListener(BuildReporter(project))
 
         project.createDir("src/commonMain/kotlin")
+        project.createDir("src/commonMain/resources")
 
         configureProjectRepository(project)
         configureDependencies(project)
