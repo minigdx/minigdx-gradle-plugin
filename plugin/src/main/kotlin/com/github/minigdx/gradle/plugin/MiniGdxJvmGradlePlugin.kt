@@ -95,7 +95,11 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                     }
                 }
             jar.from(flatClasses)
+            jar.destinationDirectory.set(project.buildDir.resolve("minigdx"))
             jar.dependsOn("gltf", "jvmJar")
+            jar.doLast {
+                project.logger.lifecycle("[MINIGDX] The jar distribution of your game is available at: ${jar.outputs.files.first()}")
+            }
         }
     }
 
