@@ -45,6 +45,37 @@ gradlePlugin {
     }
 }
 
+pluginBundle {
+    website = "https://github.com/minigdx/minigdx-gradle-plugin"
+    vcsUrl = "https://github.com/minigdx/minigdx-gradle-plugin"
+
+    (plugins) {
+        // first plugin
+        "common" {
+            // id is captured from java-gradle-plugin configuration
+            displayName = "MiniGDX plugin"
+            description =
+                """Configure your gradle project for creating a minigdx game.""".trimMargin()
+            tags = listOf("minigdx")
+        }
+
+        "jvm" {
+            displayName = "MiniGDX Kotlin JVM Developer plugin"
+            description =
+                """Configure your gradle project for creating a minigdx game that target the JVM platform.""".trimMargin()
+            tags = listOf("minigdx", "kotlin", "jvm")
+        }
+
+        "js" {
+            displayName = "MiniGDX Kotlin Multiplatform Developer plugin"
+            description =
+                """Configure your gradle project for creating a minigdx game that target the web platform.
+            """.trimMargin()
+            tags = listOf("minigdx", "kotlin", "js")
+        }
+    }
+}
+
 // Add a source set for the functional test suite
 val functionalTestSourceSet = sourceSets.create("functionalTest") {
 }
