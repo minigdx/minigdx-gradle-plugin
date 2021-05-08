@@ -13,7 +13,7 @@ plugins {
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
 
-    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.0.0.RC2"
+    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.0.0"
 }
 
 repositories {
@@ -25,7 +25,7 @@ dependencies {
     implementation("me.champeau.jdoctor:jdoctor-utils:0.1")
 
     api("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.4.20")
-    api("com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin:LATEST-SNAPSHOT")
+    api("com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin:1.0.0")
 }
 
 gradlePlugin {
