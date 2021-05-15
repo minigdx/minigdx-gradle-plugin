@@ -27,13 +27,13 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
         project.tasks.register("runJs") {
             it.group = "minigdx"
             it.description = "Run your game in your browser."
-            it.dependsOn("gltf", "jsBrowserDevelopmentRun")
+            it.dependsOn("gltf", "browserDevelopmentRun")
         }
 
         project.tasks.register("bundle-js", Zip::class.java) {
             it.group = "minigdx"
             it.description = "Create a bundle as zip."
-            it.dependsOn("gltf", "jsBrowserProductionWebpack")
+            it.dependsOn("gltf", "jsBrowserDistribution")
             it.from(project.buildDir.resolve("distributions"))
             it.destinationDirectory.set(project.buildDir.resolve("minigdx"))
             it.doLast {
