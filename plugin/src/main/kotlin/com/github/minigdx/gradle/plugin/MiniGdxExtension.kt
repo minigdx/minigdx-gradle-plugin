@@ -13,7 +13,7 @@ class JvmConfiguration(project: Project) {
 open class MiniGdxExtension(project: Project) {
 
     val version = project.objects.property(String::class.java)
-        .value("1.0.0")
+        .value("LATEST-SNAPSHOT")
 
     val jvm = JvmConfiguration(project)
 }

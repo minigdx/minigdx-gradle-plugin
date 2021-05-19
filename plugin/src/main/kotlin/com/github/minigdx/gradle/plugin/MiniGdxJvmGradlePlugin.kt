@@ -33,11 +33,6 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             configureTasks(project, it.minigdx)
         }
         // TODO:
-        //   configure task to create a templated game
-        //   configure task to run application
-        //   configure task to bundle fat jar
-        //   configure task to bundle app+jvm ?
-        //   configure pipeline pour github ?
         //   configure build chain to get java 11 and jpackage
         //   https://walczak.it/blog/distributing-javafx-desktop-applications-without-requiring-jvm-using-jlink-and-jpackage
     }

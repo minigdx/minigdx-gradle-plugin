@@ -17,6 +17,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 import java.net.URI
 
 class MiniGdxCommonGradlePlugin : Plugin<Project> {
@@ -110,8 +111,8 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
             }
 
             if (project.hasPlatforms(MiniGdxPlatform.JAVASCRIPT)) {
-                mpp.js {
-                    this.useCommonJs()
+                mpp.js(KotlinJsCompilerType.IR) {
+                    this.binaries.executable()
                     this.browser {
                         this.webpackTask {
                             this.compilation.kotlinOptions {
@@ -121,7 +122,6 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                             }
                         }
                     }
-                    this.nodejs()
                 }
             }
 
