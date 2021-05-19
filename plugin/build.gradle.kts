@@ -13,7 +13,7 @@ plugins {
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
 
-    id("com.github.minigdx.gradle.plugin.developer.jvm") version "LATEST-SNAPSHOT"
+    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.1.0-alpha0"
 }
 
 repositories {

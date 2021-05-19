@@ -53,7 +53,6 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
             it.from(project.zipTree(dependencies.singleFile))
             it.include("/internal/**")
             it.into("build/processedResources/js/main")
-
         }
         project.afterEvaluate {
             project.tasks.getByName("jsProcessResources").dependsOn(copy)
