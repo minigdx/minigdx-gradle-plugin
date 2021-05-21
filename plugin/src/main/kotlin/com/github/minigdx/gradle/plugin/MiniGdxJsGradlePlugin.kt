@@ -29,7 +29,7 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
         project.tasks.register("runJs") {
             it.group = "minigdx"
             it.description = "Run your game in your browser."
-            it.dependsOn("gltf", "browserDevelopmentRun")
+            it.dependsOn("gltf", "jsBrowserDevelopmentRun")
         }
 
         project.tasks.register("bundle-js", Zip::class.java) {
