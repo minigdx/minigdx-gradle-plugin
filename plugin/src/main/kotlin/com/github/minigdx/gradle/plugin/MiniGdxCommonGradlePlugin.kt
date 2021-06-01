@@ -16,6 +16,7 @@ import com.github.minigdx.gradle.plugin.internal.platforms
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.attributes.Attribute
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 import java.net.URI
@@ -81,6 +82,13 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
     }
 
     private fun configureDependencies(project: Project) {
+        // Create custom configuration that unpack depdencies on  the js platform
+        project.configurations.create("minigdxToUnpack") {
+            it.setTransitive(false)
+            it.attributes {
+                it.attribute(Attribute.of("org.gradle.usage", String::class.java), "kotlin-runtime")
+            }
+        }
         project.afterEvaluate {
             project.dependencies.add("commonMainImplementation", "com.github.minigdx:minigdx:${project.minigdx.version.get()}")
         }
