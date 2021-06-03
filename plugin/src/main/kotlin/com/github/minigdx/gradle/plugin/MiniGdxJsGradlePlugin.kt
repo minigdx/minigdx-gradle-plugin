@@ -7,7 +7,6 @@ import com.github.minigdx.gradle.plugin.internal.maybeCreateMiniGdxExtension
 import com.github.minigdx.gradle.plugin.internal.minigdx
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.attributes.Attribute
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Zip
 
@@ -29,7 +28,7 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
         project.tasks.register("runJs") {
             it.group = "minigdx"
             it.description = "Run your game in your browser."
-            it.dependsOn("gltf", "browserDevelopmentRun")
+            it.dependsOn("gltf", "jsBrowserDevelopmentRun")
         }
 
         project.tasks.register("bundle-js", Zip::class.java) {
@@ -50,7 +49,7 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
 
             it.group = "minigdx"
             it.description = "Unpack resources used by minigdx needed by the web platform."
-            it.from(project.zipTree(dependencies.singleFile))
+            it.from(dependencies.map { project.zipTree(it) })
             it.include("/internal/**")
             it.into("build/processedResources/js/main")
         }
@@ -60,13 +59,6 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
     }
 
     private fun configureMiniGdxDependencies(project: Project) {
-        project.configurations.create("minigdxToUnpack") {
-            it.setTransitive(false)
-            it.attributes {
-                it.attribute(Attribute.of("org.gradle.usage", String::class.java), "kotlin-runtime")
-            }
-        }
-
         project.afterEvaluate {
             project.dependencies.add("commonMainImplementation", "com.github.minigdx:minigdx:${project.minigdx.version.get()}")
             project.dependencies.add("jsMainImplementation", "com.github.minigdx:minigdx-js:${project.minigdx.version.get()}")
