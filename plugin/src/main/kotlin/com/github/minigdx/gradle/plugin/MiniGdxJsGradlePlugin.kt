@@ -31,7 +31,7 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
             dependsOn("gltf", "jsBrowserDevelopmentRun")
         }
 
-        project.tasks.register("bundle-js", Zip::class.java) {
+        project.tasks.register("bundleJs", Zip::class.java) {
             group = "minigdx"
             description = "Create a bundle as zip."
             dependsOn("gltf", "jsBrowserDistribution")

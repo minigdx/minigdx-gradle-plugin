@@ -44,6 +44,11 @@ gradlePlugin {
         id = "com.github.minigdx.js"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxJsGradlePlugin"
     }
+
+    val settings by plugins.creating {
+        id = "com.github.minigdx.settings"
+        implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxSettingsPlugin"
+    }
 }
 
 pluginBundle {

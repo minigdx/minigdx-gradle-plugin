@@ -65,7 +65,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             dependsOn("gltf", "jvmJar")
         }
 
-        project.tasks.register("bundle-jar", Jar::class.java) {
+        project.tasks.register("bundleJar", Jar::class.java) {
             checkMainClass(project, minigdx)
             group = "minigdx"
             description = "Create a bundle as a Fat "
