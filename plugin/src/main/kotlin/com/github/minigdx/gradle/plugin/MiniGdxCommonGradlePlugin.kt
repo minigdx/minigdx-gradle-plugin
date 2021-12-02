@@ -71,10 +71,10 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         project.repositories.google()
         // Snapshot repository. Select only our snapshot dependencies
         project.repositories.maven {
-            it.url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         }.mavenContent {
-            it.includeVersionByRegex("com.github.minigdx", "(.*)", "LATEST-SNAPSHOT")
-            it.includeVersionByRegex("com.github.minigdx.(.*)", "(.*)", "LATEST-SNAPSHOT")
+            includeVersionByRegex("com.github.minigdx", "(.*)", "LATEST-SNAPSHOT")
+            includeVersionByRegex("com.github.minigdx.(.*)", "(.*)", "LATEST-SNAPSHOT")
         }
         project.repositories.mavenLocal()
         // Will be deprecated soon... Required for dokka
@@ -84,9 +84,9 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
     private fun configureDependencies(project: Project) {
         // Create custom configuration that unpack depdencies on  the js platform
         project.configurations.create("minigdxToUnpack") {
-            it.setTransitive(false)
-            it.attributes {
-                it.attribute(Attribute.of("org.gradle.usage", String::class.java), "kotlin-runtime")
+            setTransitive(false)
+            attributes {
+                attribute(Attribute.of("org.gradle.usage", String::class.java), "kotlin-runtime")
             }
         }
         project.afterEvaluate {
@@ -95,13 +95,13 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
     }
 
     private fun configureMiniGdxGltfPlugin(project: Project) {
-        project.apply { it.plugin("com.github.minigdx.gradle.plugin.gltf") }
+        project.apply { plugin("com.github.minigdx.gradle.plugin.gltf") }
 
         project.extensions.configure<NamedDomainObjectContainer<GltfExtensions>>("gltfPlugin") {
-            it.register("assetsSource") {
-                it.format.set(Format.PROTOBUF)
-                it.gltfDirectory.set(project.file("src/commonMain/assetsSource"))
-                it.target.set(project.assertsDirectory())
+            register("assetsSource") {
+                format.set(Format.PROTOBUF)
+                gltfDirectory.set(project.file("src/commonMain/assetsSource"))
+                target.set(project.assertsDirectory())
             }
         }
 
@@ -109,17 +109,17 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
     }
 
     fun configure(project: Project) {
-        project.apply { it.plugin("org.jetbrains.kotlin.multiplatform") }
-        project.extensions.configure<KotlinMultiplatformExtension>("kotlin") { mpp ->
+        project.apply { plugin("org.jetbrains.kotlin.multiplatform") }
+        project.extensions.configure<KotlinMultiplatformExtension>("kotlin") {
             if (project.hasPlatforms(MiniGdxPlatform.JVM)) {
-                mpp.jvm {
+                jvm {
                     this.compilations.getByName("main").kotlinOptions.jvmTarget = "1.8"
                     this.compilations.getByName("test").kotlinOptions.jvmTarget = "1.8"
                 }
             }
 
             if (project.hasPlatforms(MiniGdxPlatform.JAVASCRIPT)) {
-                mpp.js(KotlinJsCompilerType.IR) {
+                js(KotlinJsCompilerType.IR) {
                     this.binaries.executable()
                     this.browser {
                         this.webpackTask {
@@ -133,15 +133,15 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                 }
             }
 
-            mpp.sourceSets.apply {
+            sourceSets.apply {
                 getByName("commonMain") {
-                    it.dependencies {
+                    dependencies {
                         implementation(kotlin("stdlib-common"))
                     }
                 }
 
                 getByName("commonTest") {
-                    it.dependencies {
+                    dependencies {
                         implementation(kotlin("test-common"))
                         implementation(kotlin("test-annotations-common"))
                     }
@@ -149,13 +149,13 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
                 if (project.hasPlatforms(MiniGdxPlatform.JVM)) {
                     getByName("jvmMain") {
-                        it.dependencies {
+                        dependencies {
                             implementation(kotlin("stdlib-jdk8"))
                         }
                     }
 
                     getByName("jvmTest") {
-                        it.dependencies {
+                        dependencies {
                             implementation(kotlin("test-junit"))
                         }
                     }
@@ -163,20 +163,20 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
                 if (project.hasPlatforms(MiniGdxPlatform.JAVASCRIPT)) {
                     getByName("jsMain") {
-                        it.dependencies {
+                        dependencies {
                             implementation(kotlin("stdlib-js"))
                         }
                     }
 
                     getByName("jsTest") {
-                        it.dependencies {
+                        dependencies {
                             implementation(kotlin("test-js"))
                         }
                     }
                 }
             }
-            mpp.sourceSets.all {
-                it.languageSettings.apply {
+            sourceSets.all {
+                languageSettings.apply {
                     this.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
                     this.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
                 }

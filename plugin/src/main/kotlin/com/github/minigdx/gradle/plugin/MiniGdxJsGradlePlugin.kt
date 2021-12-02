@@ -26,19 +26,19 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
 
     private fun configureTasks(project: Project) {
         project.tasks.register("runJs") {
-            it.group = "minigdx"
-            it.description = "Run your game in your browser."
-            it.dependsOn("gltf", "jsBrowserDevelopmentRun")
+            group = "minigdx"
+            description = "Run your game in your browser."
+            dependsOn("gltf", "jsBrowserDevelopmentRun")
         }
 
         project.tasks.register("bundle-js", Zip::class.java) {
-            it.group = "minigdx"
-            it.description = "Create a bundle as zip."
-            it.dependsOn("gltf", "jsBrowserDistribution")
-            it.from(project.buildDir.resolve("distributions"))
-            it.destinationDirectory.set(project.buildDir.resolve("minigdx"))
-            it.doLast {
-                project.logger.lifecycle("[MINIGDX] The js distribution of your game is available at: ${it.outputs.files.first()}")
+            group = "minigdx"
+            description = "Create a bundle as zip."
+            dependsOn("gltf", "jsBrowserDistribution")
+            from(project.buildDir.resolve("distributions"))
+            destinationDirectory.set(project.buildDir.resolve("minigdx"))
+            doLast {
+                project.logger.lifecycle("[MINIGDX] The js distribution of your game is available at: ${outputs.files.first()}")
             }
         }
 
@@ -47,11 +47,11 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
         val copy = project.tasks.register("unpack-minigdx-resources", Copy::class.java) {
             val dependencies = project.configurations.getAt("minigdxToUnpack")
 
-            it.group = "minigdx"
-            it.description = "Unpack resources used by minigdx needed by the web platform."
-            it.from(dependencies.map { project.zipTree(it) })
-            it.include("/internal/**")
-            it.into("build/processedResources/js/main")
+            group = "minigdx"
+            description = "Unpack resources used by minigdx needed by the web platform."
+            from(dependencies.map { project.zipTree(it) })
+            include("/internal/**")
+            into("build/processedResources/js/main")
         }
         project.afterEvaluate {
             project.tasks.getByName("jsProcessResources").dependsOn(copy)

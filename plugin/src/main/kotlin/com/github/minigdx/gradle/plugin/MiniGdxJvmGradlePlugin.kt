@@ -17,9 +17,6 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.JavaExec
 import org.gradle.jvm.tasks.Jar
 
-/**
- * A simple 'hello world' plugin.
- */
 class MiniGdxJvmGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
@@ -29,8 +26,8 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
         configureSourceSets(project)
 
         project.afterEvaluate {
-            configureMiniGdxDependencies(project, it.minigdx)
-            configureTasks(project, it.minigdx)
+            configureMiniGdxDependencies(project, minigdx)
+            configureTasks(project, minigdx)
         }
         // TODO:
         //   configure build chain to get java 11 and jpackage
@@ -52,34 +49,34 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
     }
 
     private fun configureTasks(project: Project, minigdx: MiniGdxExtension) {
-        project.apply { it.plugin("org.gradle.application") }
+        project.apply { plugin("org.gradle.application") }
 
         project.tasks.register("runJvm", JavaExec::class.java) {
             checkMainClass(project, minigdx)
-            it.group = "minigdx"
-            it.description = "Run your game on the JVM."
-            it.jvmArgs = listOf("-XstartOnFirstThread")
-            it.workingDir = project.assertsDirectory()
-            it.mainClass.set(minigdx.jvm.mainClass)
-            it.classpath = project.files(
+            group = "minigdx"
+            description = "Run your game on the JVM."
+            jvmArgs = listOf("-XstartOnFirstThread")
+            workingDir = project.assertsDirectory()
+            mainClass.set(minigdx.jvm.mainClass)
+            classpath = project.files(
                 project.buildDir.resolve("classes/kotlin/jvm/main"),
                 project.configurations.getByName("jvmRuntimeClasspath")
             )
-            it.dependsOn("gltf", "jvmJar")
+            dependsOn("gltf", "jvmJar")
         }
 
-        project.tasks.register("bundle-jar", Jar::class.java) { jar ->
+        project.tasks.register("bundle-jar", Jar::class.java) {
             checkMainClass(project, minigdx)
-            jar.group = "minigdx"
-            jar.description = "Create a bundle as a Fat jar."
+            group = "minigdx"
+            description = "Create a bundle as a Fat "
 
-            jar.archiveFileName.set("${project.rootProject.name}-jvm.jar")
-            jar.manifest { m ->
-                m.attributes(mapOf("Main-Class" to (project.minigdx.jvm.mainClass.get())))
+            archiveFileName.set("${project.rootProject.name}-jvm.jar")
+            manifest {
+                attributes(mapOf("Main-Class" to (project.minigdx.jvm.mainClass.get())))
             }
 
-            jar.from(project.assertsDirectory())
-            jar.from(project.buildDir.resolve("classes/kotlin/jvm/main"))
+            from(project.assertsDirectory())
+            from(project.buildDir.resolve("classes/kotlin/jvm/main"))
             val dependenciesJar = project.configurations.getByName("jvmRuntimeClasspath").files
             val flatClasses = dependenciesJar.filter { it.exists() }
                 .map { deps ->
@@ -89,11 +86,11 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                         project.zipTree(deps)
                     }
                 }
-            jar.from(flatClasses)
-            jar.destinationDirectory.set(project.buildDir.resolve("minigdx"))
-            jar.dependsOn("gltf", "jvmJar")
-            jar.doLast {
-                project.logger.lifecycle("[MINIGDX] The jar distribution of your game is available at: ${jar.outputs.files.first()}")
+            from(flatClasses)
+            destinationDirectory.set(project.buildDir.resolve("minigdx"))
+            dependsOn("gltf", "jvmJar")
+            doLast {
+                project.logger.lifecycle("[MINIGDX] The jar distribution of your game is available at: ${outputs.files.first()}")
             }
         }
     }

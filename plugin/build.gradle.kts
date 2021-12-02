@@ -12,8 +12,9 @@ plugins {
 
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
+    `kotlin-dsl`
 
-    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.1.0-alpha0"
+    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.1.0"
 }
 
 repositories {
