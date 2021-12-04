@@ -4,11 +4,8 @@
 package com.github.minigdx.gradle.plugin
 
 import com.github.minigdx.gradle.plugin.internal.MiniGdxException
-import com.github.minigdx.gradle.plugin.internal.MiniGdxPlatform
 import com.github.minigdx.gradle.plugin.internal.Severity
 import com.github.minigdx.gradle.plugin.internal.Solution
-import com.github.minigdx.gradle.plugin.internal.assertsDirectory
-import com.github.minigdx.gradle.plugin.internal.checkCommonPlugin
 import com.github.minigdx.gradle.plugin.internal.createDir
 import com.github.minigdx.gradle.plugin.internal.maybeCreateMiniGdxExtension
 import com.github.minigdx.gradle.plugin.internal.minigdx
@@ -16,14 +13,18 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.JavaExec
 import org.gradle.jvm.tasks.Jar
+import java.io.File
+import java.net.URI
 
 class MiniGdxJvmGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         project.maybeCreateMiniGdxExtension()
-        project.checkCommonPlugin(MiniGdxPlatform.JVM)
+
+        project.apply { plugin("org.jetbrains.kotlin.jvm") }
 
         configureSourceSets(project)
+        configureProjectRepository(project)
 
         project.afterEvaluate {
             configureMiniGdxDependencies(project, minigdx)
@@ -34,15 +35,30 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
         //   https://walczak.it/blog/distributing-javafx-desktop-applications-without-requiring-jvm-using-jlink-and-jpackage
     }
 
+    private fun configureProjectRepository(project: Project) {
+        project.repositories.mavenCentral()
+        project.repositories.google()
+        // Snapshot repository. Select only our snapshot dependencies
+        project.repositories.maven {
+            url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        }.mavenContent {
+            includeVersionByRegex("com.github.minigdx", "(.*)", "LATEST-SNAPSHOT")
+            includeVersionByRegex("com.github.minigdx.(.*)", "(.*)", "LATEST-SNAPSHOT")
+        }
+        project.repositories.mavenLocal()
+        // Will be deprecated soon... Required for dokka
+        project.repositories.jcenter()
+    }
+
     private fun configureSourceSets(project: Project) {
-        project.createDir("src/jvmMain/kotlin")
-        project.createDir("src/jvmTest/kotlin")
+        project.createDir("src/main/kotlin")
+        project.createDir("src/test/kotlin")
     }
 
     private fun configureMiniGdxDependencies(project: Project, minigdx: MiniGdxExtension) {
         project.afterEvaluate {
             project.dependencies.add(
-                "jvmMainImplementation",
+                "implementation",
                 "com.github.minigdx:minigdx-jvm:${minigdx.version.get()}"
             )
         }
@@ -56,13 +72,12 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             group = "minigdx"
             description = "Run your game on the JVM."
             jvmArgs = listOf("-XstartOnFirstThread")
-            workingDir = project.assertsDirectory()
+            workingDir = project.projectDir.resolve(File("../common/src/commonMain/resources"))
             mainClass.set(minigdx.jvm.mainClass)
             classpath = project.files(
-                project.buildDir.resolve("classes/kotlin/jvm/main"),
-                project.configurations.getByName("jvmRuntimeClasspath")
+                project.tasks.getByName("classes").outputs,
+                project.configurations.getByName("runtimeClasspath")
             )
-            dependsOn("gltf", "jvmJar")
         }
 
         project.tasks.register("bundleJar", Jar::class.java) {
@@ -75,9 +90,9 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                 attributes(mapOf("Main-Class" to (project.minigdx.jvm.mainClass.get())))
             }
 
-            from(project.assertsDirectory())
-            from(project.buildDir.resolve("classes/kotlin/jvm/main"))
-            val dependenciesJar = project.configurations.getByName("jvmRuntimeClasspath").files
+            from(project.projectDir.resolve(File("../common/src/commonMain/resources")))
+            from(project.tasks.named("classes"))
+            val dependenciesJar = project.configurations.getByName("runtimeClasspath").files
             val flatClasses = dependenciesJar.filter { it.exists() }
                 .map { deps ->
                     if (deps.isDirectory) {
@@ -88,7 +103,6 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                 }
             from(flatClasses)
             destinationDirectory.set(project.buildDir.resolve("minigdx"))
-            dependsOn("gltf", "jvmJar")
             doLast {
                 project.logger.lifecycle("[MINIGDX] The jar distribution of your game is available at: ${outputs.files.first()}")
             }

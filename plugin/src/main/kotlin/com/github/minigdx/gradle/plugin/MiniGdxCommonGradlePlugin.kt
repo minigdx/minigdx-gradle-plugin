@@ -1,22 +1,21 @@
 package com.github.minigdx.gradle.plugin
 
+import com.android.build.gradle.LibraryExtension
 import com.github.dwursteisen.gltf.Format
 import com.github.dwursteisen.gltf.GltfExtensions
-import com.github.minigdx.gradle.plugin.internal.BuildReporter
-import com.github.minigdx.gradle.plugin.internal.MiniGdxException
-import com.github.minigdx.gradle.plugin.internal.MiniGdxPlatform
-import com.github.minigdx.gradle.plugin.internal.Severity
-import com.github.minigdx.gradle.plugin.internal.Solution
+import com.github.minigdx.gradle.plugin.internal.SdkHelper
 import com.github.minigdx.gradle.plugin.internal.assertsDirectory
 import com.github.minigdx.gradle.plugin.internal.createDir
-import com.github.minigdx.gradle.plugin.internal.hasPlatforms
 import com.github.minigdx.gradle.plugin.internal.maybeCreateMiniGdxExtension
 import com.github.minigdx.gradle.plugin.internal.minigdx
-import com.github.minigdx.gradle.plugin.internal.platforms
+import org.gradle.api.DefaultTask
+import org.gradle.api.JavaVersion
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.attributes.Attribute
+import org.gradle.kotlin.dsl.withType
+import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 import java.net.URI
@@ -25,40 +24,15 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         project.maybeCreateMiniGdxExtension()
-        if (project.platforms().isEmpty()) {
-            throw MiniGdxException.create(
-                severity = Severity.EASY,
-                project = project,
-                because = "No MiniGDX platform has been found.",
-                description = "When the MiniGDX common plugin has been applied, no platform were found. " +
-                    "It might be because you forgot to declare it or because you declare it in a wrong order.",
-                solutions = listOf(
-                    Solution(
-                        description =
-                            """Add a platform plugin before the common plugin:
-                            | plugins {
-                            |    id("com.github.minigdx.jvm") <-- A platform needs to be declared before the common plugin
-                            |    id("com.github.minigdx.common")
-                            | 
-                            | }
-                        """.trimMargin()
-                    ),
-                    Solution(
-                        description =
-                            """Declare platforms need to be declare before the common plugin:
-                            | plugins {
-                            |    id("com.github.minigdx.common")
-                            |    id("com.github.minigdx.js") <-- Wrong! The declaration should be before the common declaration 
-                            | }
-                        """.trimMargin()
-                    )
-                )
-            )
-        }
-        project.gradle.addBuildListener(BuildReporter(project))
 
         project.createDir("src/commonMain/kotlin")
         project.createDir("src/commonMain/resources")
+        project.createDir("src/jvmMain/kotlin")
+        project.createDir("src/jvmTest/kotlin")
+        project.createDir("src/jsMain/kotlin")
+        project.createDir("src/jsTest/kotlin")
+        project.createDir("src/androidMain/kotlin")
+        project.createDir("src/androidTest/kotlin")
 
         configureProjectRepository(project)
         configureDependencies(project)
@@ -90,7 +64,10 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
             }
         }
         project.afterEvaluate {
-            project.dependencies.add("commonMainImplementation", "com.github.minigdx:minigdx:${project.minigdx.version.get()}")
+            project.dependencies.add(
+                "commonMainImplementation",
+                "com.github.minigdx:minigdx:${project.minigdx.version.get()}"
+            )
         }
     }
 
@@ -106,30 +83,81 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         }
 
         project.createDir("src/commonMain/assetsSource")
+
+        project.afterEvaluate {
+            project.tasks.withType(DefaultTask::class.java).named("preBuild").configure {
+                this.inputs.file(project.tasks.named("gltf").get().outputs)
+            }
+        }
+    }
+
+    private fun isAndroidDetected(project: Project): Boolean {
+        return SdkHelper.hasAndroid(project.rootDir)
     }
 
     fun configure(project: Project) {
+
+        val androidDetected = isAndroidDetected(project)
+        if (androidDetected) {
+            project.plugins.apply("com.android.library")
+
+            project.extensions.configure<LibraryExtension>("android") {
+                compileSdkVersion(29)
+                buildToolsVersion = "29.0.3" // FIXME: configure that using extension method?
+                defaultConfig {
+                    minSdkVersion(13)
+                }
+                sourceSets.getByName("main") {
+                    manifest.srcFile("src/androidMain/AndroidManifest.xml")
+                    assets.srcDirs("src/commonMain/resources")
+                }
+
+                packagingOptions {
+                    exclude("META-INF/DEPENDENCIES")
+                    exclude("META-INF/LICENSE")
+                    exclude("META-INF/LICENSE.txt")
+                    exclude("META-INF/license.txt")
+                    exclude("META-INF/NOTICE")
+                    exclude("META-INF/NOTICE.txt")
+                    exclude("META-INF/notice.txt")
+                    exclude("META-INF/ASL2.0")
+                    exclude("META-INF/*.kotlin_module")
+                }
+
+                // Configure only for each module that uses Java 8
+                // language features (either in its source code or
+                // through dependencies).
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_1_8
+                    targetCompatibility = JavaVersion.VERSION_1_8
+                }
+            }
+        }
+
         project.apply { plugin("org.jetbrains.kotlin.multiplatform") }
+
         project.extensions.configure<KotlinMultiplatformExtension>("kotlin") {
-            if (project.hasPlatforms(MiniGdxPlatform.JVM)) {
-                jvm {
-                    this.compilations.getByName("main").kotlinOptions.jvmTarget = "1.8"
-                    this.compilations.getByName("test").kotlinOptions.jvmTarget = "1.8"
+            jvm {
+                this.compilations.getByName("main").kotlinOptions.jvmTarget = "1.8"
+                this.compilations.getByName("test").kotlinOptions.jvmTarget = "1.8"
+            }
+
+            js(KotlinJsCompilerType.IR) {
+                this.binaries.library()
+                this.browser {
+                    this.webpackTask {
+                        this.compilation.kotlinOptions {
+                            this.sourceMap = true
+                            this.sourceMapEmbedSources = "always"
+                            this.freeCompilerArgs += listOf("-Xopt-in=kotlin.ExperimentalStdlibApi")
+                        }
+                    }
                 }
             }
 
-            if (project.hasPlatforms(MiniGdxPlatform.JAVASCRIPT)) {
-                js(KotlinJsCompilerType.IR) {
-                    this.binaries.executable()
-                    this.browser {
-                        this.webpackTask {
-                            this.compilation.kotlinOptions {
-                                this.sourceMap = true
-                                this.sourceMapEmbedSources = "always"
-                                this.freeCompilerArgs += listOf("-Xopt-in=kotlin.ExperimentalStdlibApi")
-                            }
-                        }
-                    }
+            if (androidDetected) {
+                android {
+                    publishLibraryVariants("release", "debug")
                 }
             }
 
@@ -147,30 +175,40 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                     }
                 }
 
-                if (project.hasPlatforms(MiniGdxPlatform.JVM)) {
-                    getByName("jvmMain") {
+                getByName("jvmMain") {
+                    dependencies {
+                        implementation(kotlin("stdlib-jdk8"))
+                    }
+                }
+
+                getByName("jvmTest") {
+                    dependencies {
+                        implementation(kotlin("test-junit"))
+                    }
+                }
+
+                getByName("jsMain") {
+                    dependencies {
+                        implementation(kotlin("stdlib-js"))
+                    }
+                }
+
+                getByName("jsTest") {
+                    dependencies {
+                        implementation(kotlin("test-js"))
+                    }
+                }
+
+                if (androidDetected) {
+                    getByName("androidMain") {
                         dependencies {
                             implementation(kotlin("stdlib-jdk8"))
                         }
                     }
 
-                    getByName("jvmTest") {
+                    getByName("androidTest") {
                         dependencies {
                             implementation(kotlin("test-junit"))
-                        }
-                    }
-                }
-
-                if (project.hasPlatforms(MiniGdxPlatform.JAVASCRIPT)) {
-                    getByName("jsMain") {
-                        dependencies {
-                            implementation(kotlin("stdlib-js"))
-                        }
-                    }
-
-                    getByName("jsTest") {
-                        dependencies {
-                            implementation(kotlin("test-js"))
                         }
                     }
                 }
@@ -180,6 +218,10 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                     this.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
                     this.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
                 }
+            }
+
+            project.tasks.withType(ProcessResources::class.java).named("jvmProcessResources").configure {
+                from(project.tasks.named("gltf"))
             }
         }
     }
