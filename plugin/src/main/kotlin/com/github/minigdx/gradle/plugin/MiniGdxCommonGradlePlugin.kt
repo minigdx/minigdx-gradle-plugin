@@ -65,7 +65,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         }
         project.afterEvaluate {
             project.dependencies.add(
-                "commonMainImplementation",
+                "commonMainApi",
                 "com.github.minigdx:minigdx:${project.minigdx.version.get()}"
             )
         }

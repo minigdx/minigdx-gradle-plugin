@@ -18,7 +18,6 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
 
         project.apply { plugin("org.jetbrains.kotlin.js") }
 
-
         configureProjectRepository(project)
         project.extensions.configure<KotlinJsProjectExtension>("kotlin") {
             js(IR) {
