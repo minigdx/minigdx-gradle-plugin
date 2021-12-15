@@ -3,27 +3,24 @@ package com.github.minigdx.gradle.plugin
 import com.android.build.gradle.LibraryExtension
 import com.github.dwursteisen.gltf.Format
 import com.github.dwursteisen.gltf.GltfExtensions
+import com.github.minigdx.gradle.plugin.internal.CommonConfiguration.configureProjectRepository
 import com.github.minigdx.gradle.plugin.internal.SdkHelper
 import com.github.minigdx.gradle.plugin.internal.assertsDirectory
 import com.github.minigdx.gradle.plugin.internal.createDir
-import com.github.minigdx.gradle.plugin.internal.maybeCreateMiniGdxExtension
-import com.github.minigdx.gradle.plugin.internal.minigdx
+import com.github.minigdx.gradle.plugin.internal.maybeCreateExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.JavaVersion
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.attributes.Attribute
-import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
-import java.net.URI
 
 class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        project.maybeCreateMiniGdxExtension()
+        val minigdx = project.maybeCreateExtension(MiniGdxExtension::class.java)
 
         project.createDir("src/commonMain/kotlin")
         project.createDir("src/commonMain/resources")
@@ -35,38 +32,18 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         project.createDir("src/androidTest/kotlin")
 
         configureProjectRepository(project)
-        configureDependencies(project)
+        configureDependencies(project, minigdx)
         configureMiniGdxGltfPlugin(project)
-        configure(project)
+        configure(project, minigdx)
     }
 
-    private fun configureProjectRepository(project: Project) {
-        project.repositories.mavenCentral()
-        project.repositories.google()
-        // Snapshot repository. Select only our snapshot dependencies
-        project.repositories.maven {
-            url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        }.mavenContent {
-            includeVersionByRegex("com.github.minigdx", "(.*)", "LATEST-SNAPSHOT")
-            includeVersionByRegex("com.github.minigdx.(.*)", "(.*)", "LATEST-SNAPSHOT")
-        }
-        project.repositories.mavenLocal()
-        // Will be deprecated soon... Required for dokka
-        project.repositories.jcenter()
-    }
-
-    private fun configureDependencies(project: Project) {
-        // Create custom configuration that unpack depdencies on  the js platform
-        project.configurations.create("minigdxToUnpack") {
-            setTransitive(false)
-            attributes {
-                attribute(Attribute.of("org.gradle.usage", String::class.java), "kotlin-runtime")
-            }
-        }
+    private fun configureDependencies(project: Project, minigdx: MiniGdxExtension) {
         project.afterEvaluate {
             project.dependencies.add(
+                // Set the dependency as API so there is nothing to configure about dependencies
+                // on platforms modules
                 "commonMainApi",
-                "com.github.minigdx:minigdx:${project.minigdx.version.get()}"
+                "com.github.minigdx:minigdx:${minigdx.version.get()}"
             )
         }
     }
@@ -85,9 +62,8 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         project.createDir("src/commonMain/assetsSource")
 
         project.afterEvaluate {
-            project.tasks.withType(DefaultTask::class.java).named("preBuild").configure {
-                this.inputs.file(project.tasks.named("gltf").get().outputs)
-            }
+            val preBuildTask = project.tasks.withType(DefaultTask::class.java).findByName("preBuild")
+            preBuildTask?.inputs?.file(project.tasks.named("gltf").get().outputs)
         }
     }
 
@@ -95,17 +71,15 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         return SdkHelper.hasAndroid(project.rootDir)
     }
 
-    fun configure(project: Project) {
-
+    fun configure(project: Project, minigdx: MiniGdxExtension) {
         val androidDetected = isAndroidDetected(project)
         if (androidDetected) {
             project.plugins.apply("com.android.library")
 
             project.extensions.configure<LibraryExtension>("android") {
-                compileSdkVersion(29)
-                buildToolsVersion = "29.0.3" // FIXME: configure that using extension method?
+                compileSdkVersion(minigdx.android.compileSdkVersion.get())
                 defaultConfig {
-                    minSdkVersion(13)
+                    minSdkVersion(minigdx.android.minSdkVersion.getOrElse(8))
                 }
                 sourceSets.getByName("main") {
                     manifest.srcFile("src/androidMain/AndroidManifest.xml")

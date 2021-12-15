@@ -1,27 +1,37 @@
 package com.github.minigdx.gradle.plugin
 
+import com.github.minigdx.gradle.plugin.internal.CommonConfiguration.configureProjectRepository
+import com.github.minigdx.gradle.plugin.internal.MiniGdxException
+import com.github.minigdx.gradle.plugin.internal.Severity
+import com.github.minigdx.gradle.plugin.internal.Solution
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import java.net.URI
 
 class MiniGdxAndroidGradlePlugin : Plugin<Project> {
 
-    override fun apply(target: Project) {
-        configureProjectRepository(target)
-    }
+    override fun apply(project: Project) {
+        if (project.extensions.findByName("android") == null) {
+            throw MiniGdxException.create(
+                severity = Severity.EASY,
+                project = project,
+                because = "The android plugin is not added before the minigdx plugin.",
+                description = "MiniGDX needs the Android plugin before being applied.",
+                solutions = listOf(
+                    Solution(
+                        description =
+                            """Add the the android plugin before the minigdx plugin:
+                            | plugin {
+                            |   id("com.android.application")
+                            |   id("com.github.minigdx.android")
+                            | }
+                        """.trimMargin()
 
-    private fun configureProjectRepository(project: Project) {
-        project.repositories.mavenCentral()
-        project.repositories.google()
-        // Snapshot repository. Select only our snapshot dependencies
-        project.repositories.maven {
-            url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        }.mavenContent {
-            includeVersionByRegex("com.github.minigdx", "(.*)", "LATEST-SNAPSHOT")
-            includeVersionByRegex("com.github.minigdx.(.*)", "(.*)", "LATEST-SNAPSHOT")
+                    )
+                )
+            )
         }
-        project.repositories.mavenLocal()
-        // Will be deprecated soon... Required for dokka
-        project.repositories.jcenter()
+        project.apply { plugin("org.jetbrains.kotlin.android") }
+
+        configureProjectRepository(project)
     }
 }
