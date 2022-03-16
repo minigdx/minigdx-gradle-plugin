@@ -2,5 +2,5 @@
 │  Task name   │            Description            │
 ├──────────────┼───────────────────────────────────┤
 │ runJs        │ Run your game in your browser.    │
-│ bundle-js    │ Create a bundle as zip.           │
+│ bundleJs     │ Create a bundle as zip.           │
 └──────────────┴───────────────────────────────────┘

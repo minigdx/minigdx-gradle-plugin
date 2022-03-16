@@ -12,17 +12,23 @@ plugins {
 
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
+    `kotlin-dsl`
 
-    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.1.0-alpha0"
+    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.1.0"
 }
 
 repositories {
     gradlePluginPortal()
+    // Required to access Android Plugin
+    google()
 }
+
 dependencies {
     implementation(platform("me.champeau.jdoctor:jdoctor-bom:0.1"))
     implementation("me.champeau.jdoctor:jdoctor-core")
     implementation("me.champeau.jdoctor:jdoctor-utils:0.1")
+
+    api("com.android.tools.build:gradle:3.6.1")
 
     api("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.4.20")
     api("com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin:1.0.0")
@@ -34,14 +40,25 @@ gradlePlugin {
         id = "com.github.minigdx.common"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxCommonGradlePlugin"
     }
+
     val jvm by plugins.creating {
         id = "com.github.minigdx.jvm"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxJvmGradlePlugin"
     }
 
+    val android by plugins.creating {
+        id = "com.github.minigdx.android"
+        implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxAndroidGradlePlugin"
+    }
+
     val js by plugins.creating {
         id = "com.github.minigdx.js"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxJsGradlePlugin"
+    }
+
+    val settings by plugins.creating {
+        id = "com.github.minigdx.settings"
+        implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxSettingsPlugin"
     }
 }
 

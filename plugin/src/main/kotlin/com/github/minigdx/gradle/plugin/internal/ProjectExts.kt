@@ -1,6 +1,5 @@
 package com.github.minigdx.gradle.plugin.internal
 
-import com.github.minigdx.gradle.plugin.MiniGdxExtension
 import org.gradle.api.Project
 import java.io.File
 
@@ -54,17 +53,7 @@ fun Project.assertsDirectory(): File {
     return this.projectDir.resolve("src/commonMain/resources")
 }
 
-/**
- * Helper to access the extension.
- * Do NOT call this method too early as the extension might not be configured by the user.
- */
-val Project.minigdx: MiniGdxExtension
-    get() {
-        return this.extensions.getByType(MiniGdxExtension::class.java)
-    }
-
-fun Project.maybeCreateMiniGdxExtension() {
-    if (project.extensions.findByType(MiniGdxExtension::class.java) == null) {
-        project.extensions.create("minigdx", MiniGdxExtension::class.java, project)
-    }
+fun <T> Project.maybeCreateExtension(extensionType: Class<T>): T {
+    val extension = project.extensions.findByType(extensionType)
+    return extension ?: project.extensions.create("minigdx", extensionType, project)
 }

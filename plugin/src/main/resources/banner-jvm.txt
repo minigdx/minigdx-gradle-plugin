@@ -2,5 +2,5 @@
 │  Task name   │            Description            │
 ├──────────────┼───────────────────────────────────┤
 │ runJvm       │ Run your game on the JVM.         │
-│ bundle-jar   │ Create a bundle as a Fat jar      │
+│ bundleJar    │ Create a bundle as a Fat jar      │
 └──────────────┴───────────────────────────────────┘
