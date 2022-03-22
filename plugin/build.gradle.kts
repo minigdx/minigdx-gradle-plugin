@@ -23,6 +23,24 @@ repositories {
     google()
 }
 
+// Add a source set for the functional test suite
+val functionalTestSourceSet = sourceSets.create("functionalTest") {
+}
+
+gradlePlugin.testSourceSets(functionalTestSourceSet)
+configurations["functionalTestImplementation"].extendsFrom(configurations["testImplementation"])
+
+// Add a task to run the functional tests
+val functionalTest by tasks.registering(Test::class) {
+    testClassesDirs = functionalTestSourceSet.output.classesDirs
+    classpath = functionalTestSourceSet.runtimeClasspath
+}
+
+tasks.check {
+    // Run the functional tests as part of `check`
+    dependsOn(functionalTest)
+}
+
 dependencies {
     implementation(platform("me.champeau.jdoctor:jdoctor-bom:0.1"))
     implementation("me.champeau.jdoctor:jdoctor-core")
@@ -32,6 +50,8 @@ dependencies {
 
     api("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.4.20")
     api("com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin:1.0.0")
+
+    testImplementation(gradleTestKit())
 }
 
 gradlePlugin {
@@ -93,20 +113,9 @@ pluginBundle {
     }
 }
 
-// Add a source set for the functional test suite
-val functionalTestSourceSet = sourceSets.create("functionalTest") {
-}
-
-gradlePlugin.testSourceSets(functionalTestSourceSet)
-configurations["functionalTestImplementation"].extendsFrom(configurations["testImplementation"])
-
-// Add a task to run the functional tests
-val functionalTest by tasks.registering(Test::class) {
-    testClassesDirs = functionalTestSourceSet.output.classesDirs
-    classpath = functionalTestSourceSet.runtimeClasspath
-}
-
-tasks.check {
-    // Run the functional tests as part of `check`
-    dependsOn(functionalTest)
+project.afterEvaluate {
+    project.tasks.withType(Test::class.java) {
+        this.reports.junitXml.isEnabled = true
+        this.testLogging.showStandardStreams = true
+    }
 }

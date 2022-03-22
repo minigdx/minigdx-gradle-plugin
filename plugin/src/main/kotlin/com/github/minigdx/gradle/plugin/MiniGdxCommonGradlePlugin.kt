@@ -1,6 +1,5 @@
 package com.github.minigdx.gradle.plugin
 
-import com.android.build.gradle.LibraryExtension
 import com.github.dwursteisen.gltf.Format
 import com.github.dwursteisen.gltf.GltfExtensions
 import com.github.minigdx.gradle.plugin.internal.CommonConfiguration.configureProjectRepository
@@ -9,7 +8,6 @@ import com.github.minigdx.gradle.plugin.internal.assertsDirectory
 import com.github.minigdx.gradle.plugin.internal.createDir
 import com.github.minigdx.gradle.plugin.internal.maybeCreateExtension
 import org.gradle.api.DefaultTask
-import org.gradle.api.JavaVersion
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -32,20 +30,20 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         project.createDir("src/androidTest/kotlin")
 
         configureProjectRepository(project)
-        configureDependencies(project, minigdx)
         configureMiniGdxGltfPlugin(project)
-        configure(project, minigdx)
+        configure(project)
+        configureDependencies(project, minigdx)
     }
 
     private fun configureDependencies(project: Project, minigdx: MiniGdxExtension) {
-        project.afterEvaluate {
-            project.dependencies.add(
+        project.dependencies.add(
+            "commonMainApi",
+            minigdx.version.map { version ->
                 // Set the dependency as API so there is nothing to configure about dependencies
                 // on platforms modules
-                "commonMainApi",
-                "com.github.minigdx:minigdx:${minigdx.version.get()}"
-            )
-        }
+                "com.github.minigdx:minigdx:$version"
+            }
+        )
     }
 
     private fun configureMiniGdxGltfPlugin(project: Project) {
@@ -71,45 +69,13 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         return SdkHelper.hasAndroid(project.rootDir)
     }
 
-    fun configure(project: Project, minigdx: MiniGdxExtension) {
+    fun configure(project: Project) {
         val androidDetected = isAndroidDetected(project)
         if (androidDetected) {
             project.plugins.apply("com.android.library")
-
-            project.extensions.configure<LibraryExtension>("android") {
-                compileSdkVersion(minigdx.android.compileSdkVersion.get())
-                defaultConfig {
-                    minSdkVersion(minigdx.android.minSdkVersion.getOrElse(8))
-                }
-                sourceSets.getByName("main") {
-                    manifest.srcFile("src/androidMain/AndroidManifest.xml")
-                    assets.srcDirs("src/commonMain/resources")
-                }
-
-                packagingOptions {
-                    exclude("META-INF/DEPENDENCIES")
-                    exclude("META-INF/LICENSE")
-                    exclude("META-INF/LICENSE.txt")
-                    exclude("META-INF/license.txt")
-                    exclude("META-INF/NOTICE")
-                    exclude("META-INF/NOTICE.txt")
-                    exclude("META-INF/notice.txt")
-                    exclude("META-INF/ASL2.0")
-                    exclude("META-INF/*.kotlin_module")
-                }
-
-                // Configure only for each module that uses Java 8
-                // language features (either in its source code or
-                // through dependencies).
-                compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_1_8
-                    targetCompatibility = JavaVersion.VERSION_1_8
-                }
-            }
         }
 
         project.apply { plugin("org.jetbrains.kotlin.multiplatform") }
-
         project.extensions.configure<KotlinMultiplatformExtension>("kotlin") {
             jvm {
                 this.compilations.getByName("main").kotlinOptions.jvmTarget = "1.8"
