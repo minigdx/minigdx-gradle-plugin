@@ -116,10 +116,3 @@ pluginBundle {
         }
     }
 }
-
-project.afterEvaluate {
-    project.tasks.withType(Test::class.java) {
-        this.reports.junitXml.isEnabled = true
-        this.testLogging.showStandardStreams = true
-    }
-}

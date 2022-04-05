@@ -34,6 +34,9 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         projectDir.resolve("common").mkdirs()
         projectDir.resolve("jvm").mkdirs()
         projectDir.resolve("js").mkdirs()
+        projectDir.resolve("local.properties").writeText(
+            """minigdx.android.enabled=false"""
+        )
         projectDir.resolve("settings.gradle").writeText(
             """
             include("common", "jvm", "js")
