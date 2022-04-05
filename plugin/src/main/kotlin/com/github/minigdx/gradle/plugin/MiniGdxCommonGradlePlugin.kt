@@ -2,6 +2,7 @@ package com.github.minigdx.gradle.plugin
 
 import com.github.dwursteisen.gltf.Format
 import com.github.dwursteisen.gltf.GltfExtensions
+import com.github.minigdx.gradle.plugin.android.MockLibraryExtension
 import com.github.minigdx.gradle.plugin.internal.CommonConfiguration.configureProjectRepository
 import com.github.minigdx.gradle.plugin.internal.SdkHelper
 import com.github.minigdx.gradle.plugin.internal.assertsDirectory
@@ -31,7 +32,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
         configureProjectRepository(project)
         configureMiniGdxGltfPlugin(project)
-        configure(project)
+        configure(project, minigdx)
         configureDependencies(project, minigdx)
     }
 
@@ -60,7 +61,8 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         project.createDir("src/commonMain/assetsSource")
 
         project.afterEvaluate {
-            val preBuildTask = project.tasks.withType(DefaultTask::class.java).findByName("preBuild")
+            val preBuildTask =
+                project.tasks.withType(DefaultTask::class.java).findByName("preBuild")
             preBuildTask?.inputs?.file(project.tasks.named("gltf").get().outputs)
         }
     }
@@ -69,10 +71,12 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         return SdkHelper.hasAndroid(project.rootDir)
     }
 
-    fun configure(project: Project) {
+    fun configure(project: Project, minigdx: MiniGdxExtension) {
         val androidDetected = isAndroidDetected(project)
         if (androidDetected) {
             project.plugins.apply("com.android.library")
+        } else {
+            project.extensions.create("android", MockLibraryExtension::class.java, project)
         }
 
         project.apply { plugin("org.jetbrains.kotlin.multiplatform") }
@@ -160,9 +164,10 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
                 }
             }
 
-            project.tasks.withType(ProcessResources::class.java).named("jvmProcessResources").configure {
-                from(project.tasks.named("gltf"))
-            }
+            project.tasks.withType(ProcessResources::class.java).named("jvmProcessResources")
+                .configure {
+                    from(project.tasks.named("gltf"))
+                }
         }
     }
 }

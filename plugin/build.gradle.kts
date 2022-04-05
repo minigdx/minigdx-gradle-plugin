@@ -46,6 +46,10 @@ dependencies {
     implementation("me.champeau.jdoctor:jdoctor-core")
     implementation("me.champeau.jdoctor:jdoctor-utils:0.1")
 
+    implementation("org.mockito:mockito-core:4.4.0")?.because(
+        "Mockito is used to mock the Android extension when the Android SDK is missing"
+    )
+
     api("com.android.tools.build:gradle:3.6.1")
 
     api("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.4.20")

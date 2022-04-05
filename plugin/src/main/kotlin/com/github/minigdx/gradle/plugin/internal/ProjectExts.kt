@@ -3,21 +3,21 @@ package com.github.minigdx.gradle.plugin.internal
 import org.gradle.api.Project
 import java.io.File
 
-fun Project.hasPlatforms(vararg platforms: MiniGdxPlatform): Boolean {
+internal fun Project.hasPlatforms(vararg platforms: MiniGdxPlatform): Boolean {
     return platforms.all { this.plugins.hasPlugin(it.pluginId) }
 }
 
-fun Project.platforms(): Set<MiniGdxPlatform> {
+internal fun Project.platforms(): Set<MiniGdxPlatform> {
     return MiniGdxPlatform.values()
         .filter { this.hasPlatforms(it) }
         .toSet()
 }
 
-fun Project.hasCommonPlugin(): Boolean {
+internal fun Project.hasCommonPlugin(): Boolean {
     return this.plugins.hasPlugin("com.github.minigdx.common")
 }
 
-fun Project.checkCommonPlugin(platform: MiniGdxPlatform) {
+internal fun Project.checkCommonPlugin(platform: MiniGdxPlatform) {
     if (hasCommonPlugin()) {
         MiniGdxException.create(
             severity = Severity.EASY,
@@ -40,7 +40,7 @@ fun Project.checkCommonPlugin(platform: MiniGdxPlatform) {
     }
 }
 
-fun Project.createDir(directoryName: String): Boolean {
+internal fun Project.createDir(directoryName: String): Boolean {
     return if (!this.file(directoryName).exists()) {
         this.file(directoryName).mkdirs()
     } else {
@@ -48,12 +48,12 @@ fun Project.createDir(directoryName: String): Boolean {
     }
 }
 
-fun Project.assertsDirectory(): File {
+internal fun Project.assertsDirectory(): File {
     // FIXME: it will not work with Android
     return this.projectDir.resolve("src/commonMain/resources")
 }
 
-fun <T> Project.maybeCreateExtension(extensionType: Class<T>): T {
+internal fun <T> Project.maybeCreateExtension(extensionType: Class<T>): T {
     val extension = project.extensions.findByType(extensionType)
     return extension ?: project.extensions.create("minigdx", extensionType, project)
 }
