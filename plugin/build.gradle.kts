@@ -23,15 +23,39 @@ repositories {
     google()
 }
 
+// Add a source set for the functional test suite
+val functionalTestSourceSet = sourceSets.create("functionalTest") {
+}
+
+gradlePlugin.testSourceSets(functionalTestSourceSet)
+configurations["functionalTestImplementation"].extendsFrom(configurations["testImplementation"])
+
+// Add a task to run the functional tests
+val functionalTest by tasks.registering(Test::class) {
+    testClassesDirs = functionalTestSourceSet.output.classesDirs
+    classpath = functionalTestSourceSet.runtimeClasspath
+}
+
+tasks.check {
+    // Run the functional tests as part of `check`
+    dependsOn(functionalTest)
+}
+
 dependencies {
     implementation(platform("me.champeau.jdoctor:jdoctor-bom:0.1"))
     implementation("me.champeau.jdoctor:jdoctor-core")
     implementation("me.champeau.jdoctor:jdoctor-utils:0.1")
 
+    implementation("org.mockito:mockito-core:4.4.0")?.because(
+        "Mockito is used to mock the Android extension when the Android SDK is missing"
+    )
+
     api("com.android.tools.build:gradle:3.6.1")
 
     api("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.4.20")
     api("com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin:1.0.0")
+
+    testImplementation(gradleTestKit())
 }
 
 gradlePlugin {
@@ -91,22 +115,4 @@ pluginBundle {
             tags = listOf("minigdx", "kotlin", "js")
         }
     }
-}
-
-// Add a source set for the functional test suite
-val functionalTestSourceSet = sourceSets.create("functionalTest") {
-}
-
-gradlePlugin.testSourceSets(functionalTestSourceSet)
-configurations["functionalTestImplementation"].extendsFrom(configurations["testImplementation"])
-
-// Add a task to run the functional tests
-val functionalTest by tasks.registering(Test::class) {
-    testClassesDirs = functionalTestSourceSet.output.classesDirs
-    classpath = functionalTestSourceSet.runtimeClasspath
-}
-
-tasks.check {
-    // Run the functional tests as part of `check`
-    dependsOn(functionalTest)
 }

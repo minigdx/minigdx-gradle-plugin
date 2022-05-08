@@ -19,7 +19,10 @@ object SdkHelper {
             // The path to the Android SDK is defined.
             // The plugin will not check if the SDK is valid.
             // It will assume that it's correct.
-            localProperties.hasProperty("sdk.dir") || localProperties.hasProperty("android.dir")
+            val sdkIsConfigured = localProperties.hasProperty("sdk.dir") || localProperties.hasProperty("android.dir")
+            val androidEnabled = !localProperties.hasProperty("minigdx.android.enabled") ||
+                localProperties.getProperty("minigdx.android.enabled") == "true"
+            sdkIsConfigured && androidEnabled
         } else {
             System.getenv("ANDROID_HOME") != null
         }
