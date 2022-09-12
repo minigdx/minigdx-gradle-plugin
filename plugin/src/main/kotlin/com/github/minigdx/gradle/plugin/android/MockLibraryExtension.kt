@@ -16,6 +16,8 @@ open class MockLibraryExtension(project: Project) {
 
     fun compileOptions(block: EmptyCompileOptions.() -> Unit) = Unit
 
+    fun kotlinOptions(block: EmptyKotlinOptions.() -> Unit) = Unit
+
     val sourceSets: NamedDomainObjectContainer<AndroidSourceSet> = createContainer(AndroidSourceSet::class.java)
 
     companion object {
@@ -25,6 +27,10 @@ open class MockLibraryExtension(project: Project) {
             return Mockito.mock(NamedDomainObjectContainer::class.java) as NamedDomainObjectContainer<T>
         }
     }
+}
+
+class EmptyKotlinOptions {
+    var jvmTarget: String = JavaVersion.VERSION_1_8.toString()
 }
 
 class EmptyCompileOptions {
