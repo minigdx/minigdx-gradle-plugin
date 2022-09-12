@@ -8,13 +8,13 @@
 
 plugins {
     // Plugin publication plugin.
-    id("com.gradle.plugin-publish") version "0.13.0"
+    id("com.gradle.plugin-publish") version "1.0.0"
 
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
     `kotlin-dsl`
 
-    id("com.github.minigdx.gradle.plugin.developer.jvm") version "1.1.0"
+    id("com.github.minigdx.gradle.plugin.developer.jvm") version "DEV-SNAPSHOT"
 }
 
 repositories {
@@ -42,18 +42,18 @@ tasks.check {
 }
 
 dependencies {
-    implementation(platform("me.champeau.jdoctor:jdoctor-bom:0.1"))
+    implementation(platform("me.champeau.jdoctor:jdoctor-bom:0.1.2"))
     implementation("me.champeau.jdoctor:jdoctor-core")
-    implementation("me.champeau.jdoctor:jdoctor-utils:0.1")
+    implementation("me.champeau.jdoctor:jdoctor-utils:0.1.2")
 
     implementation("org.mockito:mockito-core:4.4.0")?.because(
         "Mockito is used to mock the Android extension when the Android SDK is missing"
     )
 
-    api("com.android.tools.build:gradle:3.6.1")
+    api("com.android.tools.build:gradle:7.2.2")
 
-    api("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.4.20")
-    api("com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin:1.0.0")
+    api("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.6.21")
+    api("com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin:DEV-SNAPSHOT")
 
     testImplementation(gradleTestKit())
 }
@@ -63,26 +63,36 @@ gradlePlugin {
     val common by plugins.creating {
         id = "com.github.minigdx.common"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxCommonGradlePlugin"
+        displayName = "MiniGDX Common plugin"
+        description = "Configure your gradle project for creating a minigdx game."
     }
 
     val jvm by plugins.creating {
         id = "com.github.minigdx.jvm"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxJvmGradlePlugin"
+        displayName = "MiniGDX Kotlin JVM plugin"
+        description = "Configure your gradle project for creating a minigdx game that target the JVM platform."
     }
 
     val android by plugins.creating {
         id = "com.github.minigdx.android"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxAndroidGradlePlugin"
+        displayName = "MiniGDX Kotlin Android plugin"
+        description = "Configure your gradle project for creating a minigdx game that target the web platform."
     }
 
     val js by plugins.creating {
         id = "com.github.minigdx.js"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxJsGradlePlugin"
+        displayName = "MiniGDX Kotlin Web plugin"
+        description = "Configure your gradle project for creating a minigdx game that target the web platform."
     }
 
     val settings by plugins.creating {
         id = "com.github.minigdx.settings"
         implementationClass = "com.github.minigdx.gradle.plugin.MiniGdxSettingsPlugin"
+        displayName = "MiniGDX Kotlin Settings plugin"
+        description = "Add actions for the settings of a MiniGDX Gradle project."
     }
 }
 
@@ -90,29 +100,13 @@ pluginBundle {
     website = "https://github.com/minigdx/minigdx-gradle-plugin"
     vcsUrl = "https://github.com/minigdx/minigdx-gradle-plugin"
 
-    (plugins) {
-        // first plugin
-        "common" {
-            // id is captured from java-gradle-plugin configuration
-            displayName = "MiniGDX plugin"
-            description =
-                """Configure your gradle project for creating a minigdx game.""".trimMargin()
-            tags = listOf("minigdx")
-        }
+    tags = listOf("minigdx", "kotlin", "jvm", "js", "android")
+}
 
-        "jvm" {
-            displayName = "MiniGDX Kotlin JVM Developer plugin"
-            description =
-                """Configure your gradle project for creating a minigdx game that target the JVM platform.""".trimMargin()
-            tags = listOf("minigdx", "kotlin", "jvm")
-        }
-
-        "js" {
-            displayName = "MiniGDX Kotlin Multiplatform Developer plugin"
-            description =
-                """Configure your gradle project for creating a minigdx game that target the web platform.
-            """.trimMargin()
-            tags = listOf("minigdx", "kotlin", "js")
-        }
+project.afterEvaluate {
+    tasks.withType(AbstractPublishToMaven::class.java) {
+        // Keep only the plugin publication and keep unique artifacts
+        this.publication.setArtifacts(this.publication.artifacts.distinctBy { it.file })
+        this.onlyIf { this.publication.name == "pluginMaven" }
     }
 }

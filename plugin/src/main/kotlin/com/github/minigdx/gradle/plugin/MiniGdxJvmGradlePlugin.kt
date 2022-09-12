@@ -8,6 +8,7 @@ import com.github.minigdx.gradle.plugin.internal.createDir
 import com.github.minigdx.gradle.plugin.internal.maybeCreateExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.JavaExec
 import org.gradle.jvm.tasks.Jar
 import java.io.File
@@ -42,7 +43,9 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             checkMainClass(project, minigdx)
             group = "minigdx"
             description = "Run your game on the JVM."
-            jvmArgs = listOf("-XstartOnFirstThread")
+            if(isMacOs()) {
+                jvmArgs = listOf("-XstartOnFirstThread")
+            }
             workingDir = project.projectDir.resolve(File("../common/src/commonMain/resources"))
             mainClass.set(minigdx.mainClass)
             classpath = project.files(
@@ -55,7 +58,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             checkMainClass(project, minigdx)
             group = "minigdx"
             description = "Create a bundle as a Fat "
-
+            duplicatesStrategy = DuplicatesStrategy.FAIL
             archiveFileName.set("${project.rootProject.name}-jvm.jar")
             manifest {
                 attributes(mapOf("Main-Class" to (minigdx.mainClass.get())))
@@ -101,5 +104,11 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                 )
             )
         }
+    }
+
+    private fun isMacOs(): Boolean {
+        val osName = System.getProperty("os.name")?.lowercase()
+        val index = osName?.indexOf("mac") ?: -1
+        return index >= 0
     }
 }

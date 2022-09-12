@@ -32,7 +32,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
 
         configureProjectRepository(project)
         configureMiniGdxGltfPlugin(project)
-        configure(project, minigdx)
+        configure(project)
         configureDependencies(project, minigdx)
     }
 
@@ -71,7 +71,7 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         return SdkHelper.hasAndroid(project.rootDir)
     }
 
-    fun configure(project: Project, minigdx: MiniGdxExtension) {
+    fun configure(project: Project) {
         val androidDetected = isAndroidDetected(project)
         if (androidDetected) {
             project.plugins.apply("com.android.library")
@@ -159,8 +159,8 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
             }
             sourceSets.all {
                 languageSettings.apply {
-                    this.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
-                    this.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
+                    this.optIn("kotlin.ExperimentalStdlibApi")
+                    this.optIn("kotlinx.serialization.ExperimentalSerializationApi")
                 }
             }
 
