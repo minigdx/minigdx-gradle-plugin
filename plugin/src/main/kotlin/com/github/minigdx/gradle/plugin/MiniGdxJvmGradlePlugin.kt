@@ -58,7 +58,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             checkMainClass(project, minigdx)
             group = "minigdx"
             description = "Create a bundle as a Fat "
-            duplicatesStrategy = DuplicatesStrategy.FAIL
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             archiveFileName.set("${project.rootProject.name}-jvm.jar")
             manifest {
                 attributes(mapOf("Main-Class" to (minigdx.mainClass.get())))
