@@ -1,6 +1,6 @@
 package com.github.minigdx.gradle.plugin.android
 
-import com.android.build.gradle.api.AndroidSourceSet
+import com.android.build.api.dsl.AndroidSourceSet
 import org.gradle.api.JavaVersion
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project

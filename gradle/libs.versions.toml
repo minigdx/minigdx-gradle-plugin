@@ -1,0 +1,25 @@
+[versions]
+kotlin = "1.6.21"
+jdoctor = "0.1.2"
+gradlePublish = "1.0.0"
+mockito = "4.4.0"
+android = "7.2.2"
+minigdx-gltf = "DEV-SNAPSHOT"
+minigdx-jvm = "DEV-SNAPSHOT"
+
+[libraries]
+kotlin-plugin-mpp = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
+
+jdoctor-bom = { module = "me.champeau.jdoctor:jdoctor-bom", version.ref = "jdoctor" }
+jdoctor-core = { module = "me.champeau.jdoctor:jdoctor-core" }
+jdoctor-utils = { module = "me.champeau.jdoctor:jdoctor-utils", version.ref = "jdoctor" }
+
+mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+
+android = { module = "com.android.tools.build:gradle", version.ref = "android" }
+
+minigdx-plugin-gltf = { module = "com.github.minigdx.gradle.plugin.gltf:com.github.minigdx.gradle.plugin.gltf.gradle.plugin", version.ref = "minigdx-gltf"}
+
+[plugins]
+gradle-publish = { id = "com.gradle.plugin-publish", version.ref = "gradlePublish" }
+minigdx-jvm = { id = "com.github.minigdx.gradle.plugin.developer.jvm", version.ref = "minigdx-jvm" }
