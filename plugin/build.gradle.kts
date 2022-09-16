@@ -45,7 +45,7 @@ dependencies {
     api(libs.android)
 
     api(libs.kotlin.plugin.mpp)
-    api(libs.minigdx.plugin)
+    api(libs.minigdx.plugin.gltf)
 
     testImplementation(gradleTestKit())
 }
