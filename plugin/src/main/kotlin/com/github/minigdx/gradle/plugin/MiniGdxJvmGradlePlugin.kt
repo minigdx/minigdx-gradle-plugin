@@ -49,7 +49,8 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             workingDir = project.projectDir.resolve(File("../common/src/commonMain/resources"))
             mainClass.set(minigdx.mainClass)
             classpath = project.files(
-                project.tasks.getByName("classes").outputs,
+                project.tasks.getByName("compileKotlin").outputs,
+                project.tasks.getByName("compileJava").outputs,
                 project.configurations.getByName("runtimeClasspath")
             )
         }
@@ -65,7 +66,8 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             }
 
             from(project.projectDir.resolve(File("../common/src/commonMain/resources")))
-            from(project.tasks.named("classes"))
+            from(project.tasks.named("compileKotlin"))
+            from(project.tasks.named("compileJava"))
             val dependenciesJar = project.configurations.getByName("runtimeClasspath").files
             val flatClasses = dependenciesJar.filter { it.exists() }
                 .map { deps ->

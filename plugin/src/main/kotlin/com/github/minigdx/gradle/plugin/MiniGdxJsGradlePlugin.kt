@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.api.attributes.Attribute
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Zip
+import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import java.io.File
 
@@ -60,7 +61,13 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
             into("build/processedResources/js/main")
         }
         project.afterEvaluate {
-            project.tasks.getByName("processResources").dependsOn(copy)
+            project.tasks.withType(ProcessResources::class.java).getByName("processResources").dependsOn(copy)
+
+            // See https://stackoverflow.com/a/69538679/476690
+            // Fixes webpack-cli incompatibility by pinning the newest version.
+            rootProject.extensions.configure(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension::class.java) {
+                versions.webpackCli.version = "4.10.0"
+            }
         }
     }
 
