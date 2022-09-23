@@ -51,7 +51,6 @@ dependencies {
 }
 
 gradlePlugin {
-    this.isAutomatedPublishing = false
     // Define the plugin
     val common by plugins.creating {
         id = "com.github.minigdx.common"
@@ -94,4 +93,10 @@ pluginBundle {
     vcsUrl = "https://github.com/minigdx/minigdx-gradle-plugin"
 
     tags = listOf("minigdx", "kotlin", "jvm", "js", "android")
+}
+
+project.afterEvaluate {
+    tasks.withType(AbstractPublishToMaven::class.java) {
+        onlyIf { it.name == "pluginMaven" }
+    }
 }
