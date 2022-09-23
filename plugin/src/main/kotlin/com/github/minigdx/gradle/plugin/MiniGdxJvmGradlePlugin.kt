@@ -43,7 +43,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             checkMainClass(project, minigdx)
             group = "minigdx"
             description = "Run your game on the JVM."
-            if(isMacOs()) {
+            if (isMacOs()) {
                 jvmArgs = listOf("-XstartOnFirstThread")
             }
             workingDir = project.projectDir.resolve(File("../common/src/commonMain/resources"))
@@ -95,7 +95,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
                 solutions = listOf(
                     Solution(
                         description =
-                            """Add the configuration of the main class in your gradle build script:
+                        """Add the configuration of the main class in your gradle build script:
                             | minigdx {
                             |   jvm.mainClass.set("com.example.MainKt")
                             | 

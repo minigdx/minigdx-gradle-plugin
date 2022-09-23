@@ -29,7 +29,6 @@ class MiniGdxProblem(
     enum class ProblemId {
         PROBLEM
     }
-
 }
 
 enum class Severity {

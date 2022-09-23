@@ -19,7 +19,7 @@ class MiniGdxAndroidGradlePlugin : Plugin<Project> {
                 solutions = listOf(
                     Solution(
                         description =
-                            """Add the the android plugin before the minigdx plugin:
+                        """Add the the android plugin before the minigdx plugin:
                             | plugin {
                             |   id("com.android.application")
                             |   id("com.github.minigdx.android")
