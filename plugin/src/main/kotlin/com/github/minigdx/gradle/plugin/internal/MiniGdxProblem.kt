@@ -15,11 +15,10 @@ class MiniGdxProblem(
     reason: Supplier<String>,
     docUrl: Supplier<String?>,
     solutions: List<Supplier<JSolution>>
-) : BaseProblem<MiniGdxProblem.ProblemId, Severity, Context, MiniGdxProblem.Payload>(
+) : BaseProblem<MiniGdxProblem.ProblemId, Severity, Context>(
     ProblemId.PROBLEM,
     severity,
     context,
-    Payload(),
     shortDescription,
     Supplier { -> null },
     reason,
@@ -30,8 +29,6 @@ class MiniGdxProblem(
     enum class ProblemId {
         PROBLEM
     }
-
-    class Payload
 }
 
 enum class Severity {
@@ -104,10 +101,10 @@ class MiniGdxException(
             val problem = MiniGdxProblem(
                 severity,
                 Context(project, severity),
-                Supplier { description },
-                Supplier { because },
-                Supplier { documentedAt },
-                solutions.map { Supplier { it as JSolution } }
+                { description },
+                { because },
+                { documentedAt },
+                solutions.map { Supplier { it } }
             )
 
             val message = SimpleTextRenderer.render(problem)

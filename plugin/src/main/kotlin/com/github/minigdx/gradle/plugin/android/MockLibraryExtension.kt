@@ -1,6 +1,6 @@
 package com.github.minigdx.gradle.plugin.android
 
-import com.android.build.gradle.api.AndroidSourceSet
+import com.android.build.api.dsl.AndroidSourceSet
 import org.gradle.api.JavaVersion
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -16,6 +16,8 @@ open class MockLibraryExtension(project: Project) {
 
     fun compileOptions(block: EmptyCompileOptions.() -> Unit) = Unit
 
+    fun kotlinOptions(block: EmptyKotlinOptions.() -> Unit) = Unit
+
     val sourceSets: NamedDomainObjectContainer<AndroidSourceSet> = createContainer(AndroidSourceSet::class.java)
 
     companion object {
@@ -25,6 +27,10 @@ open class MockLibraryExtension(project: Project) {
             return Mockito.mock(NamedDomainObjectContainer::class.java) as NamedDomainObjectContainer<T>
         }
     }
+}
+
+class EmptyKotlinOptions {
+    var jvmTarget: String = JavaVersion.VERSION_1_8.toString()
 }
 
 class EmptyCompileOptions {

@@ -16,8 +16,6 @@ class BuildReporter(private val project: Project) : BuildListener {
 
     private val classLoader = BuildReporter::class.java.classLoader
 
-    override fun buildStarted(gradle: Gradle) = Unit
-
     override fun settingsEvaluated(settings: Settings) = Unit
 
     override fun projectsLoaded(gradle: Gradle) = Unit
@@ -42,5 +40,6 @@ class BuildReporter(private val project: Project) : BuildListener {
         gradle.rootProject.logger.quiet(String(content.readBytes()))
     }
 
+    @Deprecated("Will be removed in futur gradle release")
     override fun buildFinished(result: BuildResult) = Unit
 }
