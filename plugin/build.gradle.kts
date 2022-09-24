@@ -94,9 +94,3 @@ pluginBundle {
 
     tags = listOf("minigdx", "kotlin", "jvm", "js", "android")
 }
-
-project.afterEvaluate {
-    tasks.withType(AbstractPublishToMaven::class.java) {
-        onlyIf { it.name == "pluginMaven" }
-    }
-}
