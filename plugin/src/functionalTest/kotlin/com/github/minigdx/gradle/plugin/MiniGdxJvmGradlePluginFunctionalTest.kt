@@ -3,9 +3,12 @@ package com.github.minigdx.gradle.plugin
 import org.gradle.testkit.runner.GradleRunner
 import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class MiniGdxJvmGradlePluginFunctionalTest {
-    @Test fun `can run task`() {
+
+    @Test
+    fun `can run task`() {
         // Setup the test build
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
@@ -19,15 +22,72 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         )
 
         // Run the build
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments("build")
-        runner.withProjectDir(projectDir)
-        runner.build()
+        GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("build")
+            .withProjectDir(projectDir)
+            .build()
     }
 
-    @Test fun `can run task multiplatform`() {
+    @Test
+    fun `can print versions`() {
+        // Setup the test build
+        val projectDir = File("build/functionalTest")
+        projectDir.mkdirs()
+        projectDir.resolve("settings.gradle").writeText("")
+        projectDir.resolve("build.gradle").writeText(
+            """
+            plugins {
+                id('com.github.minigdx.common')
+            }
+        """
+        )
+
+        // Run the build
+        val result = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("version")
+            .withProjectDir(projectDir)
+            .build()
+        assertTrue(result.output.contains("minigdx dependencies"))
+    }
+
+    @Test
+    fun `can print versions with configuration cache`() {
+        // Setup the test build
+        val projectDir = File("build/functionalTest")
+        projectDir.mkdirs()
+        projectDir.resolve("settings.gradle").writeText("")
+        projectDir.resolve("build.gradle").writeText(
+            """
+            plugins {
+                id('com.github.minigdx.common')
+            }
+        """
+        )
+
+        // Run the build
+        GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("--configuration-cache", "version")
+            .withProjectDir(projectDir)
+            .build()
+
+        val buildResult = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("--configuration-cache", "version")
+            .withProjectDir(projectDir)
+            .build()
+
+        assertTrue(buildResult.output.contains("Reusing configuration cache."))
+    }
+
+    @Test
+    fun `can run task multiplatform`() {
         // Setup the test build
         val projectDir = File("build/functionalTest/")
         projectDir.mkdirs()
@@ -97,11 +157,11 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         """
         )
         // Run the build
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments("build")
-        runner.withProjectDir(projectDir)
-        runner.build()
+        GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("build")
+            .withProjectDir(projectDir)
+            .build()
     }
 }
