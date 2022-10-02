@@ -45,7 +45,7 @@ class MiniGdxJsGradlePlugin : Plugin<Project> {
             from(project.tasks.named("browserDistribution"))
             destinationDirectory.set(project.buildDir.resolve("minigdx"))
             doLast {
-                project.logger.lifecycle("[MINIGDX] The js distribution of your game is available at: ${outputs.files.first()}")
+                logger.info("[MINIGDX] The js distribution of your game is available at: ${outputs.files.first()}")
             }
         }
 
