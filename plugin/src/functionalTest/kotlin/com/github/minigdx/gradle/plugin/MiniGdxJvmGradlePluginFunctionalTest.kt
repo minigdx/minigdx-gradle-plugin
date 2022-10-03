@@ -13,6 +13,8 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         // Setup the test build
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
+        // Disable Android
+        projectDir.resolve("local.properties").writeText("minigdx.android.enabled=false")
         projectDir.resolve("settings.gradle").writeText("")
         projectDir.resolve("build.gradle").writeText(
             """
@@ -36,6 +38,8 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         // Setup the test build
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
+        // Disable Android
+        projectDir.resolve("local.properties").writeText("minigdx.android.enabled=false")
         projectDir.resolve("settings.gradle").writeText("")
         projectDir.resolve("build.gradle").writeText(
             """
@@ -60,6 +64,8 @@ class MiniGdxJvmGradlePluginFunctionalTest {
         // Setup the test build
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
+        // Disable Android
+        projectDir.resolve("local.properties").writeText("minigdx.android.enabled=false")
         projectDir.resolve("settings.gradle").writeText("")
         projectDir.resolve("build.gradle").writeText(
             """
