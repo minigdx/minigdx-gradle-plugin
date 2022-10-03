@@ -4,8 +4,8 @@ jdoctor = "0.1.2"
 gradlePublish = "1.0.0"
 mockito = "4.4.0"
 android = "7.2.2"
-minigdx-gltf = "DEV-SNAPSHOT"
-minigdx-jvm = "DEV-SNAPSHOT"
+minigdx-gltf = "LATEST-SNAPSHOT"
+minigdx-jvm = "1.2.2"
 
 [libraries]
 kotlin-plugin-mpp = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
