@@ -8,6 +8,7 @@ import com.github.minigdx.gradle.plugin.internal.SdkHelper
 import com.github.minigdx.gradle.plugin.internal.assertsDirectory
 import com.github.minigdx.gradle.plugin.internal.createDir
 import com.github.minigdx.gradle.plugin.internal.maybeCreateExtension
+import com.github.minigdx.gradle.plugin.tasks.PrintVersionTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
@@ -34,6 +35,15 @@ class MiniGdxCommonGradlePlugin : Plugin<Project> {
         configureMiniGdxGltfPlugin(project)
         configure(project)
         configureDependencies(project, minigdx)
+
+        project.afterEvaluate {
+            val commonConfiguration = project.configurations.findByName("commonMainApiDependenciesMetadata")
+            val jvmConfiguration = project.configurations.findByName("jvmCompileClasspath")
+            project.tasks.register("version", PrintVersionTask::class.java) {
+                this.classpath.from(jvmConfiguration?.resolve() ?: emptySet<Unit>())
+                this.classpath.from(commonConfiguration?.resolve() ?: emptySet<Unit>())
+            }
+        }
     }
 
     private fun configureDependencies(project: Project, minigdx: MiniGdxExtension) {

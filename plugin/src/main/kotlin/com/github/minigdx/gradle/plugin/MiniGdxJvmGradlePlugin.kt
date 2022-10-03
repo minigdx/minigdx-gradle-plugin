@@ -80,7 +80,7 @@ class MiniGdxJvmGradlePlugin : Plugin<Project> {
             from(flatClasses)
             destinationDirectory.set(project.buildDir.resolve("minigdx"))
             doLast {
-                project.logger.lifecycle("[MINIGDX] The jar distribution of your game is available at: ${outputs.files.first()}")
+                logger.info("[MINIGDX] The jar distribution of your game is available at: ${outputs.files.first()}")
             }
         }
     }
